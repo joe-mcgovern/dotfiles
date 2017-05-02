@@ -5,7 +5,7 @@ ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="miloshadzic"
+ZSH_THEME="simple"
 
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
@@ -46,8 +46,11 @@ source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
 export PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/...
+export PATH="$HOME/.npm-packages/bin:$PATH"
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 export WORKON_HOME=~/Envs
-export ANDROID_HOME=/usr/local/opt/android-sdk
+export ANDROID_HOME=/usr/local/Cellar/android-sdk/24.4.1_1/
+export JAVA_HOME=/Library/Java/Home
 
 DEFAULT_USER=“josephmcgovern”
 
@@ -88,3 +91,19 @@ fi
 if [ -f /Users/josephmcgovern/Desktop/google-cloud-sdk/completion.zsh.inc ]; then
   source '/Users/josephmcgovern/Desktop/google-cloud-sdk/completion.zsh.inc'
 fi
+
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+###-tns-completion-start-###
+if [ -f /Users/josephmcgovern/.tnsrc ]; then
+    source /Users/josephmcgovern/.tnsrc
+fi
+###-tns-completion-end-###
+
+###-tns-completion-start-###
+if [ -f /Users/josephmcgovern/.tnsrc ]; then
+    source /Users/josephmcgovern/.tnsrc
+fi
+###-tns-completion-end-###
+
