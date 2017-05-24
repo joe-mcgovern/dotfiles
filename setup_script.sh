@@ -77,3 +77,13 @@ if [ ! -d ~/.vim/bundle/syntastic ] ; then
 fi
 
 printf "\xE2\x9C\x94 syntastic\n"
+
+if [ ! -d ~/.vim/bundle/YouCompleteMe ] ; then
+    git clone https://github.com/Valloric/YouCompleteMe.git ~/.vim/bundle/YouCompleteMe
+    cd ~/.vim/bundle/YouCompleteMe
+    git submodule update --init --recursive
+    ./install.sh --clang-completer
+    cd
+fi
+
+printf "\xE2\x9C\x94 YouCompleteMe\n"

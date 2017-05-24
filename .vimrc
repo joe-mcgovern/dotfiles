@@ -33,7 +33,7 @@ execute pathogen#infect()
 
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
-autocmd VimEnter *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
+autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -48,7 +48,7 @@ let g:syntastic_loc_list_height=3
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_by_filename = 0
-set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*
 
 if has('nvim')
     tnoremap <Esc> <C-\><C-n>
@@ -70,3 +70,8 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
 set mouse-=a
+
+function FindAndReplaceInFileSystem(original, replacement)
+    let pattern = "s/" . a:original . "/" . a:replacement  . "/g"
+    execute '!find . -type f \( -name "*.py" -or -name "*.js" \) -exec sed -i "" "' . pattern . '" {} \;'
+endfunction
