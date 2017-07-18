@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+
+  "name": "Github notification watcher",
+  "description": "This extension watches github",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "gh.png"
+  },
+  "background": {
+    "persistent": false,
+    "scripts": ["background.js"]
+  },
+  "content_scripts": [
+    {
+        "js": ["jquery.min.js", "watch_notifications.js"],
+        "matches": [
+          "https://github.com/Workiva/*/pulls",
+          "https://github.com/workiva/*/pulls"
+        ]
+    }
+  ],
+  "permissions": [
+    "tabs"
+  ]
+}
