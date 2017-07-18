@@ -3,6 +3,8 @@ syntax on
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
+set laststatus=2
+set statusline+=%F
 
 inoremap jk <ESC>
 let mapleader="\<Space>"
@@ -48,7 +50,7 @@ let g:syntastic_loc_list_height=3
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_by_filename = 0
-set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*,*.pyc,*/venv/*,*/lib/*
 
 if has('nvim')
     tnoremap <Esc> <C-\><C-n>
@@ -62,6 +64,8 @@ if has('nvim')
     autocmd VimEnter * resize -12
     autocmd VimEnter * set wfh
     autocmd VimEnter * wincmd k
+else
+    set term=screen-256color
 endif
 
 nnoremap <C-h> <C-w>h

@@ -68,6 +68,7 @@ alias ch='cd ~'
 alias cu='cd ..'
 alias 'cd-'='cd -'
 alias test='python run_nosetests.py'
+alias tmux='tmux -2'
 
 ##########
 # Adding Git Shortcuts
