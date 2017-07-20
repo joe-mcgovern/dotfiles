@@ -26,6 +26,8 @@ fi
 
 printf "\xE2\x9C\x94 vim\n"
 
+mkdir -p ~/.vim
+
 which -s nvim
 if [[ $? != 0 ]] ; then
     echo "Installing nvim..."
@@ -87,3 +89,11 @@ if [ ! -d ~/.vim/bundle/YouCompleteMe ] ; then
 fi
 
 printf "\xE2\x9C\x94 YouCompleteMe\n"
+
+if [ ! -d ~/.vim/colors ] ; then
+    git clone git@github.com:sickill/vim-monokai.git
+    mv vim-monokai/colors ~/.vim/
+    rm -rf vim-monokai
+fi
+
+printf "\xE2\x9C\x94 Monokai Theme\n"
