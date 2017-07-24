@@ -17,6 +17,15 @@ fi
 
 printf "\xE2\x9C\x94 git\n"
 
+which -s zsh
+if [[ $? != 0 ]] ; then
+    echo "Installing zsh..."
+    brew install zsh zsh-completions
+fi
+
+printf "\xE2\x9C\x94 git\n"
+
+
 which -s vim
 if [[ $? != 0 ]] ; then
     echo "Installing vim..."
