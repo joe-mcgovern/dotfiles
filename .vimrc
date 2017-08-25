@@ -23,6 +23,7 @@ nnoremap tn  :tabnext<CR>
 nnoremap td  :tabclose<CR>
 nnoremap tc  :tabedit<Space>
 nnoremap tt  :NERDTreeToggle<CR>
+set clipboard=unnamed
 set colorcolumn=80
 
 set nocp
@@ -36,6 +37,10 @@ execute pathogen#infect()
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
+autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2
+autocmd BufReadPre *.html set shiftwidth=2 | set softtabstop=2 | set tabstop=2
+autocmd WinEnter *zsh resize 12
+
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
@@ -72,8 +77,10 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+cnoreabbrev Ag Ag!
+nnoremap <Leader>a :Ag!<Space>
 
-set mouse-=a
+set mouse=a
 
 function FindAndReplaceInFileSystem(original, replacement)
     let pattern = "s/" . a:original . "/" . a:replacement  . "/g"

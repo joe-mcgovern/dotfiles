@@ -48,9 +48,11 @@ source $ZSH/oh-my-zsh.sh
 export PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/...
 export PATH="$HOME/.npm-packages/bin:$PATH"
 export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-export WORKON_HOME=~/Envs
+export PATH=$HOME/Library/Python/2.7/bin:$PATH
 export ANDROID_HOME=/usr/local/Cellar/android-sdk/24.4.1_1/
 export JAVA_HOME=/Library/Java/Home
+export WORKON_HOME=~/Envs
+source /usr/local/bin/virtualenvwrapper.sh
 
 DEFAULT_USER=“josephmcgovern”
 
@@ -68,6 +70,7 @@ alias ch='cd ~'
 alias cu='cd ..'
 alias 'cd-'='cd -'
 alias test='python run_nosetests.py'
+alias aws_keys='~/get_aws_keys.sh'
 alias tmux='tmux -2'
 
 ##########
@@ -82,16 +85,6 @@ alias jupyter="/usr/local/bin/jupyter-notebook"
 
 export PATH=/usr/local/bin:$PATH
 export PYTHONPATH=/usr/bin/python
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f /Users/josephmcgovern/Desktop/google-cloud-sdk/path.zsh.inc ]; then
-  source '/Users/josephmcgovern/Desktop/google-cloud-sdk/path.zsh.inc'
-fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f /Users/josephmcgovern/Desktop/google-cloud-sdk/completion.zsh.inc ]; then
-  source '/Users/josephmcgovern/Desktop/google-cloud-sdk/completion.zsh.inc'
-fi
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -108,3 +101,10 @@ if [ -f /Users/josephmcgovern/.tnsrc ]; then
 fi
 ###-tns-completion-end-###
 
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
