@@ -1,8 +1,12 @@
 #!/bin/bash
 
+echo "Copying files"
 cp ~/.zshrc .
 cp ~/.vimrc .
 cp ~/.bashrc .
-git add .
-git cim 'Syncing files'
-git push origin master
+echo "Files copied"
+echo "Pushing to git..."
+git add . > /dev/null
+git cim 'Syncing files' > /dev/null
+git push origin master > /dev/null
+echo "Updated!"
