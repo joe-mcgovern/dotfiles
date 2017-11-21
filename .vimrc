@@ -5,6 +5,7 @@ set shiftwidth=4
 set softtabstop=4
 set laststatus=2
 set statusline+=%F
+set statusline+=%{fugitive#statusline()}
 
 inoremap jk <ESC>
 let mapleader="\<Space>"
@@ -37,6 +38,7 @@ execute pathogen#infect()
 autocmd StdinReadPre * let s:std_in=1
 autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
+autocmd BufReadPre *.jsx set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.html set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd WinEnter *zsh resize 12
@@ -51,11 +53,12 @@ let g:syntastic_check_on_open = 1
 let g:syntastic_check_on_wq = 0
 let g:syntastic_python_checkers=['flake8']
 let g:syntastic_loc_list_height=3
+let g:airline_theme='base16'
 
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_by_filename = 0
-set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*,*.pyc,*/venv/*,*/lib/*
+set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*,*.pyc,*/venv/*,*/lib/*,*src/static/*
 
 if has('nvim')
     tnoremap <Esc> <C-\><C-n>
@@ -79,6 +82,25 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 cnoreabbrev Ag Ag!
 nnoremap <Leader>a :Ag!<Space>
+
+let g:EasyMotion_do_mapping = 0 " Disable default mappings
+
+" Jump to anywhere you want with minimal keystrokes, with just one key
+" binding.
+" " `s{char}{label}`
+nmap s <Plug>(easymotion-overwin-f2)
+let g:EasyMotion_smartcase = 1
+function! s:config_easyfuzzymotion(...) abort
+      return extend(copy({
+        \   'converters': [incsearch#config#fuzzyword#converter()],
+        \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
+        \   'keymap': {"\<CR>": '<Over>(easymotion)'},
+        \   'is_expr': 0,
+        \   'is_stay': 1
+        \ }), get(a:, 1, {}))
+endfunction
+
+noremap <silent><expr> <Space>/ incsearch#go(<SID>config_easyfuzzymotion())
 
 set mouse=a
 
