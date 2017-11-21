@@ -89,6 +89,40 @@ fi
 
 printf "\xE2\x9C\x94 syntastic\n"
 
+if [ ! -d ~/.vim/bundle/vim-airline ] ; then
+    git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline
+    git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes
+fi
+
+printf "\xE2\x9C\x94 vim-airline\n"
+
+if [ ! -d ~/.vim/bundle/vim-gitgutter ] ; then
+    git clone git://github.com/airblade/vim-gitgutter.git ~/.vim/bundle/vim-gitgutter
+fi
+
+printf "\xE2\x9C\x94 vim-gitgutter\n"
+
+if [ ! -d ~/.vim/bundle/vim-surround ] ; then
+    git clone git://github.com/tpope/vim-surround.git ~/.vim/bundle/vim-surround
+fi
+
+printf "\xE2\x9C\x94 vim-surround\n"
+
+if [ ! -d ~/.vim/bundle/vim-easymotion ] ; then
+    git clone https://github.com/easymotion/vim-easymotion ~/.vim/bundle/vim-easymotion
+
+fi
+
+printf "\xE2\x9C\x94 vim-easymotion\n"
+
+if [ ! -d ~/.vim/bundle/incsearch.vim ] ; then
+    git clone https://github.com/haya14busa/incsearch.vim ~/.vim/bundle/incsearch.vim
+    git clone https://github.com/haya14busa/incsearch-fuzzy.vim ~/.vim/bundle/incsearch-fuzzy.vim
+    git clone https://github.com/haya14busa/incsearch-easymotion.vim ~/.vim/bundle/incsearch-easymotion.vim
+fi
+
+printf "\xE2\x9C\x94 incsearch\n"
+
 if [ ! -d ~/.vim/bundle/YouCompleteMe ] ; then
     git clone https://github.com/Valloric/YouCompleteMe.git ~/.vim/bundle/YouCompleteMe
     cd ~/.vim/bundle/YouCompleteMe
