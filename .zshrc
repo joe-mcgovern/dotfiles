@@ -72,6 +72,8 @@ alias 'cd-'='cd -'
 alias test='python run_nosetests.py'
 alias aws_keys='~/get_aws_keys.sh'
 alias tmux='tmux -2'
+alias tmux_gae='~/tmux_gae.sh'
+alias ctags="`brew --prefix`/bin/ctags"
 
 ##########
 # Adding Git Shortcuts
@@ -85,6 +87,7 @@ alias jupyter="/usr/local/bin/jupyter-notebook"
 
 export PATH=/usr/local/bin:$PATH
 export PYTHONPATH=/usr/bin/python
+export GITHUB_TOKEN=5df328574d48ee50c015b4e1337f3c36d9e646a9
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -101,10 +104,10 @@ if [ -f /Users/josephmcgovern/.tnsrc ]; then
 fi
 ###-tns-completion-end-###
 
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc'; fi
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion

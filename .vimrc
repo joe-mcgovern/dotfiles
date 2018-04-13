@@ -6,6 +6,7 @@ set softtabstop=4
 set laststatus=2
 set statusline+=%F
 set statusline+=%{fugitive#statusline()}
+set tags=tags;/
 
 inoremap jk <ESC>
 let mapleader="\<Space>"
@@ -24,6 +25,7 @@ nnoremap tn  :tabnext<CR>
 nnoremap td  :tabclose<CR>
 nnoremap tc  :tabedit<Space>
 nnoremap tt  :NERDTreeToggle<CR>
+nnoremap <leader>. :CtrlPTag<cr>
 set clipboard=unnamed
 set colorcolumn=80
 
@@ -36,7 +38,7 @@ colorscheme monokai
 execute pathogen#infect()
 
 autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.jsx set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2
@@ -57,7 +59,9 @@ let g:airline_theme='base16'
 
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlPLastMode'
 let g:ctrlp_by_filename = 0
+let g:ctrlp_extensions = ['line']
 set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*,*.pyc,*/venv/*,*/lib/*,*src/static/*
 
 if has('nvim')
@@ -67,11 +71,6 @@ if has('nvim')
     tnoremap <A-j> <C-\><C-n><C-w>j
     tnoremap <A-k> <C-\><C-n><C-w>k
     tnoremap <A-l> <C-\><C-n><C-w>l
-
-    autocmd VimEnter * nested below split term://zsh
-    autocmd VimEnter * resize -12
-    autocmd VimEnter * set wfh
-    autocmd VimEnter * wincmd k
 else
     set term=screen-256color
 endif
@@ -88,7 +87,7 @@ let g:EasyMotion_do_mapping = 0 " Disable default mappings
 " Jump to anywhere you want with minimal keystrokes, with just one key
 " binding.
 " " `s{char}{label}`
-nmap s <Plug>(easymotion-overwin-f2)
+nmap s <Plug>(easymotion-overwin-f)
 let g:EasyMotion_smartcase = 1
 function! s:config_easyfuzzymotion(...) abort
       return extend(copy({
@@ -100,11 +99,16 @@ function! s:config_easyfuzzymotion(...) abort
         \ }), get(a:, 1, {}))
 endfunction
 
-noremap <silent><expr> <Space>/ incsearch#go(<SID>config_easyfuzzymotion())
+noremap <silent><expr> / incsearch#go(<SID>config_easyfuzzymotion())
 
 set mouse=a
 
-function FindAndReplaceInFileSystem(original, replacement)
-    let pattern = "s/" . a:original . "/" . a:replacement  . "/g"
-    execute '!find . -type f \( -name "*.py" -or -name "*.js" \) -exec sed -i "" "' . pattern . '" {} \;'
-endfunction
+let g:NERDSpaceDelims = 1
+
+" Dont show scratch preview for autocomplete
+set completeopt-=preview
+
+let g:easytags_dynamic_files = 1
+let g:easytags_async = 1
+let g:easytages_syntax_keyword = 'always'
+autocmd FileType python let b:easytags_auto_highlight = 0
