@@ -1,0 +1,42 @@
+<html>
+  <head>
+    <title>Bitcoin Market Watcher Options</title>
+    <link rel="stylesheet" type="text/css" media="screen" href="/lib/bootstrap-3.3.6/css/bootstrap.css">
+
+  </head>
+  <body style="margin-top: 15px">
+    <div class="container">
+      <div class="jumbotron">
+        <h1>Welcome!</h1>
+        <p>Add alerts to be notified when a bitcoin price meets your desired threshold</p>
+        <button class="btn btn-primary btn-lg add-alert">Add an alert</button>
+      </div>
+      <div class="row">
+        <h2>Existing Alerts</h2>
+        <div class="alerts">
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade alert-modal" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title">Add an alert</h4>
+          </div>
+          <div class="modal-body">
+            <p>Add an alert</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Add alert</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/lib/jquery.min.js"></script>
+    <script src="/lib/bootstrap-3.3.6/js/bootstrap.min.js"></script>
+    <script src="options.js"></script>
+  </body>
+</html>
