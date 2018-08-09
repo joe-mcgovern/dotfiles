@@ -45,10 +45,14 @@ plugins=(git zsh-syntax-highlighting)
 source $ZSH/oh-my-zsh.sh
 
 # Customize to your needs...
-export PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/...
+export PATH=$PATH:~/.bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/...
 export PATH="$HOME/.npm-packages/bin:$PATH"
 export PATH=/opt/local/bin:/opt/local/sbin:$PATH
 export PATH=$HOME/Library/Python/2.7/bin:$PATH
+export GOPATH=$HOME/go-workspace
+export GOROOT=/usr/local/opt/go/libexec
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:$GOROOT/bin
 export ANDROID_HOME=/usr/local/Cellar/android-sdk/24.4.1_1/
 export JAVA_HOME=/Library/Java/Home
 export WORKON_HOME=~/Envs
@@ -74,6 +78,8 @@ alias aws_keys='~/get_aws_keys.sh'
 alias tmux='tmux -2'
 alias tmux_gae='~/tmux_gae.sh'
 alias ctags="`brew --prefix`/bin/ctags"
+alias wbuild="/Users/josephmcgovern/.cargo/bin/workiva-build-cli"
+alias mux="tmuxinator"
 
 ##########
 # Adding Git Shortcuts
@@ -111,3 +117,16 @@ if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then source '/U
 
 # The next line enables shell command completion for gcloud.
 if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
+
+eval "$(direnv hook zsh)"
+
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+export EDITOR="nvim"
+export SHELL="zsh"
+
+source ~/.bin/tmuxinator.zsh
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

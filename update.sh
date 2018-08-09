@@ -4,6 +4,10 @@ echo "Copying files"
 cp ~/.zshrc .
 cp ~/.vimrc .
 cp ~/.bashrc .
+cp ~/.gitconfig .
+cp ~/.git_update.sh .
+cp ~/.sync_master.py .
+cp ~/.open_pull.py .
 echo "Files copied"
 echo "Pushing to git..."
 git add . > /dev/null

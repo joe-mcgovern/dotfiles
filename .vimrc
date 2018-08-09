@@ -1,11 +1,11 @@
 set number
+set encoding=utf-8
 syntax on
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set laststatus=2
-set statusline+=%F
-set statusline+=%{fugitive#statusline()}
+set ignorecase
 set tags=tags;/
 
 inoremap jk <ESC>
@@ -27,15 +27,17 @@ nnoremap tc  :tabedit<Space>
 nnoremap tt  :NERDTreeToggle<CR>
 nnoremap <leader>. :CtrlPTag<cr>
 set clipboard=unnamed
-set colorcolumn=80
+set colorcolumn=79
 
 set nocp
 if exists('$DOTFILES')
     source $DOTFILES/vim/autoload/pathogen.vim
     source $DOTFILES/vim/vimrc
 endif
-colorscheme monokai
+filetype off
 execute pathogen#infect()
+execute pathogen#helptags()
+filetype plugin indent on
 
 autocmd StdinReadPre * let s:std_in=1
 " autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
@@ -99,7 +101,7 @@ function! s:config_easyfuzzymotion(...) abort
         \ }), get(a:, 1, {}))
 endfunction
 
-noremap <silent><expr> / incsearch#go(<SID>config_easyfuzzymotion())
+noremap <silent><expr> <Leader>/ incsearch#go(<SID>config_easyfuzzymotion())
 
 set mouse=a
 
@@ -112,3 +114,31 @@ let g:easytags_dynamic_files = 1
 let g:easytags_async = 1
 let g:easytages_syntax_keyword = 'always'
 autocmd FileType python let b:easytags_auto_highlight = 0
+
+let g:airline_section_a = airline#section#create(['mode', ' ', 'branch'])
+" let g:airline_section_b = airline#section#create_left(['ffenc', 'branch', '%f'])
+let g:airline_section_c = airline#section#create(['%f'])
+let g:airline_section_x = airline#section#create([''])
+let g:airline_section_y = airline#section#create([''])
+let g:airline_section_z = airline#section#create_right(['%l', '%c'])
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
+
+" let g:pymode = 1
+" let g:pymode_warnings = 1
+" let g:pymode_options_max_line_length = 80
+" let g:pymode_options_colorcolumn = 1
+" let g:pymode_quickfix_minheight = 0
+" let g:pymode_quickfix_maxheight = 3
+" let g:pymode_python = 'python'
+" let g:pymode_indent = 1
+" let g:pymode_syntax = 1
+" let g:pymode_lint_checkers = ["pylint"]
+" let g:pymode_rope = 0
+" let g:pymode_lint_ignore = ["E501", "W", "E712", "E711", "E722",]
+" let g:airline_theme='molokai'
+" let g:pymode_rope_complete_on_dot = 0
+" let g:pymode_virtualenv = 0
+colorscheme monokai
