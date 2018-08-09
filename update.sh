@@ -8,6 +8,7 @@ cp ~/.gitconfig .
 cp ~/.git_update.sh .
 cp ~/.sync_master.py .
 cp ~/.open_pull.py .
+cp ~/.vim .
 echo "Files copied"
 echo "Pushing to git..."
 git add . > /dev/null
