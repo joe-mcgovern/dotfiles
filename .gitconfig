@@ -11,8 +11,10 @@
     number-of-commits-since-master = "! sh -c 'git log master..`git branch-current` --oneline | wc -l | tr -d \" \"'"
     squash = "! sh -c 'git rebase --interactive HEAD~`git number-of-commits-since-master`'"
     squash2 = "! sh -c 'git rebase --interactive `git branch-current`~`git number-of-commits-since-master` `git branch-current`'"
-    fcm = "!git log master..$(git branch-current) --oneline | tail -1 | awk '{print $2}'"
+    fcm = "!git log master..$(git branch-current) --oneline | tail -1 | cut -d ' ' -f2-"
     cfcm = "!git fcm | pbcopy"
+    fp = "!git push origin $(git branch-current) -f"
+    w = "!git update 'WIP'"
 [user]
 	name = Joseph McGovern
 	email = joseph.mcgovern@webfilings.com

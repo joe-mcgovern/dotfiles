@@ -13,7 +13,6 @@ def get_repo_name_from_remote(remote_name):
         return None
     url = url.decode('utf-8').replace('git@github.com:', '')
     url = url.replace('.git', '')
-    print(url)
     return url
 
 

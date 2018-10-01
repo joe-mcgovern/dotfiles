@@ -56,6 +56,7 @@ export PATH=$PATH:$GOROOT/bin
 export ANDROID_HOME=/usr/local/Cellar/android-sdk/24.4.1_1/
 export JAVA_HOME=/Library/Java/Home
 export WORKON_HOME=~/Envs
+export VIRTUALENVWRAPPER_HOOK_DIR=~/Envs
 source /usr/local/bin/virtualenvwrapper.sh
 
 DEFAULT_USER=“josephmcgovern”
@@ -73,13 +74,20 @@ alias pw='pwd'
 alias ch='cd ~'
 alias cu='cd ..'
 alias 'cd-'='cd -'
-alias test='python run_nosetests.py'
-alias aws_keys='~/get_aws_keys.sh'
+# alias aws_keys='~/get_aws_keys.sh'
+alias aws_keys='open https://aws-saml-broker-dev.workiva.net/'
 alias tmux='tmux -2'
+if [ -f run_nosetests.py ]; then
+    alias test='python run_nosetests.py'
+fi
 alias tmux_gae='~/tmux_gae.sh'
 alias ctags="`brew --prefix`/bin/ctags"
 alias wbuild="/Users/josephmcgovern/.cargo/bin/workiva-build-cli"
 alias mux="tmuxinator"
+alias cover="open cover/index.html"
+alias gif="~/.giffify.sh"
+alias vi='nvim'
+alias vim='nvim'
 
 ##########
 # Adding Git Shortcuts
@@ -123,8 +131,8 @@ eval "$(direnv hook zsh)"
 eval "$(pyenv init -)"
 eval "$(pyenv virtualenv-init -)"
 
-export EDITOR="nvim"
-export SHELL="zsh"
+export EDITOR="/usr/local/bin/nvim"
+export SHELL="/bin/zsh"
 
 source ~/.bin/tmuxinator.zsh
 

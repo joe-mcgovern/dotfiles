@@ -24,18 +24,18 @@ if [[ $? == 0 ]] ; then
 else
     echo "Changes staged";
 fi
-FIRST_COMMIT_MESSAGE="$(git fcm)"
 git add .
 if [ -n "$1" ] ; then
-    commit_message=$1
+    commit_message="$1"
 else
     echo -n "Commit message: "
     read commit_message
 fi
-if [ "$FIRST_COMMIT_MESSAGE" ]; then
+FIRST_COMMIT_MESSAGE="$(git fcm)"
+lowercase_commit_message=$(echo "$commit_message" | tr '[:upper:]' '[:lower:]')
+if [ "$lowercase_commit_message" != "wip" ] && [[ $FIRST_COMMIT_MESSAGE =~ ^[A-Za-z]+\-[0-9]{1,4} ]]; then
     commit_message=$(printf "%s\n- %s" "$FIRST_COMMIT_MESSAGE" "$commit_message")
 fi
-echo $commit_message
 git cim "$commit_message"
 if [[ $? != 0 ]] ; then
     echo "Not commiting, working branch clean"
