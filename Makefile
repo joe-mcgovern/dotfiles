@@ -1,5 +1,17 @@
-.PHONY: environment
-environment: homebrew git zsh vim nvim python pathogen vim-packages
+all: help
+
+.PHONY: help
+help:
+	@echo ""
+	@echo "  COMMAND             DESCRIPTION"
+	@echo "  everything          install everything"
+	@echo "  vim-packages        install all vim packages"
+	@echo "  list                list all make targets"
+	@echo ""
+
+
+.PHONY: everything
+everything: homebrew git zsh vim nvim python pathogen vim-packages
 	cp .zshrc ~/
 	cp .vimrc ~/
 	cp .bashrc ~/
@@ -8,6 +20,10 @@ environment: homebrew git zsh vim nvim python pathogen vim-packages
 	cp .sync_master.py ~/
 	cp .open_pull.py ~/
 	cp .tmux.conf ~/
+
+.PHONY: list
+list:
+	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}' | sort | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
 
 .PHONY: homebrew
 homebrew:
