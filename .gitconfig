@@ -16,7 +16,7 @@
     fp = "!git push origin $(git branch-current) -f"
     w = "!git update 'WIP'"
 [user]
-	name = Joseph McGovern
-	email = joseph.mcgovern@webfilings.com
+	name = First Last
+	email = youremail@email.com
 [push]
 	default = matching

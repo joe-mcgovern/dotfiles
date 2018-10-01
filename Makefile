@@ -1,5 +1,13 @@
 .PHONY: environment
 environment: homebrew git zsh vim nvim python pathogen vim-packages
+	cp .zshrc ~/
+	cp .vimrc ~/
+	cp .bashrc ~/
+	cp .gitconfig ~/
+	cp .git_update.sh ~/
+	cp .sync_master.py ~/
+	cp .open_pull.py ~/
+	cp .tmux.conf ~/
 
 .PHONY: homebrew
 homebrew:

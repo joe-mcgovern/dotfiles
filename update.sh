@@ -5,6 +5,8 @@ cp ~/.zshrc .
 cp ~/.vimrc .
 cp ~/.bashrc .
 cp ~/.gitconfig .
+sed -i "" 's/name = .*/name = First Last/' .gitconfig
+sed -i "" 's/email = .*/email = youremail@email.com/' .gitconfig
 cp ~/.git_update.sh .
 cp ~/.sync_master.py .
 cp ~/.open_pull.py .
