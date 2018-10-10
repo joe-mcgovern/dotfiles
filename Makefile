@@ -111,7 +111,7 @@ tmuxinator: ruby
 
 
 .PHONY: vim-packages
-vim-packages: vim-pathogen vim-ctrlp vim-nerdtree vim-syntastic vim-airline vim-gitgutter vim-surround vim-easymotion vim-incsearch vim-YouCompleteMe vim-colors vim-ack vim-fugitive vim-rhubarb vim-tcomment
+vim-packages: vim-pathogen vim-ctrlp vim-nerdtree vim-syntastic vim-airline vim-gitgutter vim-surround vim-easymotion vim-incsearch vim-YouCompleteMe vim-colors vim-ack vim-fugitive vim-rhubarb vim-tcomment vim-dart
 
 .PHONY: vim-pathogen
 vim-pathogen:
@@ -250,4 +250,12 @@ vim-tcomment:
 	if [ ! -d ~/.vim/bundle/tcomment_vim/ ] ; then \
 		echo "Installing tcomment_vim..."; \
 		git clone git@github.com:tomtom/tcomment_vim.git ~/.vim/bundle/tcomment_vim; \
+	fi;
+
+.PHONY: vim-dart
+vim-dart:
+	@set -e; \
+	if [ ! -d !/.vim/bundle/dart-vim-plugin/ ]; then \
+		echo "Installing dart-vim-plugin..."; \
+		git clone git@github.com/dart-lang/dart-vim-plugin.git ~/.vim/bundle/dart-vim-plugin; \
 	fi;

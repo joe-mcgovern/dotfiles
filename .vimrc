@@ -82,6 +82,7 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 cnoreabbrev Ag Ag!
+cnoreabbrev Gbrowse Gbrowse @upstream
 nnoremap <Leader>a :Ag!<Space>
 
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
