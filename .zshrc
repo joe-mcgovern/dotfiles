@@ -74,8 +74,8 @@ alias pw='pwd'
 alias ch='cd ~'
 alias cu='cd ..'
 alias 'cd-'='cd -'
-# alias aws_keys='~/get_aws_keys.sh'
-alias aws_keys='open https://aws-saml-broker-dev.workiva.net/'
+alias aws_keys='~/get_aws_keys.sh'
+# alias aws_keys='open https://aws-saml-broker-dev.workiva.net/'
 alias tmux='tmux -2'
 if [ -f run_nosetests.py ]; then
     alias test='python run_nosetests.py'
@@ -86,8 +86,8 @@ alias wbuild="/Users/josephmcgovern/.cargo/bin/workiva-build-cli"
 alias mux="tmuxinator"
 alias cover="open cover/index.html"
 alias gif="~/.giffify.sh"
-alias vi='nvim'
-alias vim='nvim'
+# alias vi='nvim'
+# alias vim='nvim'
 
 ##########
 # Adding Git Shortcuts
@@ -120,12 +120,6 @@ fi
 
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then source '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
-
 eval "$(direnv hook zsh)"
 
 eval "$(pyenv init -)"
@@ -138,3 +132,15 @@ source ~/.bin/tmuxinator.zsh
 
 # Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
 export PATH="$PATH:$HOME/.rvm/bin"
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Setting fd as the default source for fzf
+export FZF_DEFAULT_COMMAND='fd --type f'
+
+# To apply the command to CTRL-T as well
+export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"

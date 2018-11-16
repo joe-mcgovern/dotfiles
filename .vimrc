@@ -1,10 +1,8 @@
 set number
 set encoding=utf-8
-syntax on
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
-set laststatus=2
 set ignorecase
 set tags=tags;/
 
@@ -12,7 +10,6 @@ inoremap jk <ESC>
 let mapleader="\<Space>"
 set encoding=utf-8
 set expandtab
-filetype plugin indent on
 set wrap
 set linebreak
 " note trailing space at end of next line
@@ -26,6 +23,7 @@ nnoremap td  :tabclose<CR>
 nnoremap tc  :tabedit<Space>
 nnoremap tt  :NERDTreeToggle<CR>
 nnoremap <leader>. :CtrlPTag<cr>
+map fz :Files<CR>
 set clipboard=unnamed
 set colorcolumn=79
 
@@ -35,6 +33,7 @@ if exists('$DOTFILES')
     source $DOTFILES/vim/vimrc
 endif
 filetype off
+
 execute pathogen#infect()
 execute pathogen#helptags()
 filetype plugin indent on
@@ -47,17 +46,16 @@ autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.html set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd WinEnter *zsh resize 12
 
-set statusline+=%#warningmsg#
-set statusline+=%{SyntasticStatuslineFlag()}
-set statusline+=%*
+" set statusline+=%#warningmsg#
+" set statusline+=%{SyntasticStatuslineFlag()}
+" set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
-let g:syntastic_auto_loc_list = 1
-let g:syntastic_check_on_open = 1
-let g:syntastic_check_on_wq = 0
-let g:syntastic_python_checkers=['flake8']
-let g:syntastic_loc_list_height=3
-let g:airline_theme='base16'
+" let g:syntastic_always_populate_loc_list = 1
+" let g:syntastic_auto_loc_list = 1
+" let g:syntastic_check_on_open = 1
+" let g:syntastic_check_on_wq = 0
+" let g:syntastic_python_checkers=['flake8']
+" let g:syntastic_loc_list_height=3
 
 set runtimepath^=~/.vim/bundle/ctrlp.vim
 let g:ctrlp_map = '<c-p>'
@@ -109,37 +107,43 @@ set mouse=a
 let g:NERDSpaceDelims = 1
 
 " Dont show scratch preview for autocomplete
-set completeopt-=preview
+" set completeopt-=preview
 
-let g:easytags_dynamic_files = 1
-let g:easytags_async = 1
-let g:easytages_syntax_keyword = 'always'
-autocmd FileType python let b:easytags_auto_highlight = 0
+" let g:easytags_dynamic_files = 1
+" let g:easytags_async = 1
+" let g:easytages_syntax_keyword = 'always'
+" autocmd FileType python let b:easytags_auto_highlight = 0
 
-let g:airline_section_a = airline#section#create(['mode', ' ', 'branch'])
-" let g:airline_section_b = airline#section#create_left(['ffenc', 'branch', '%f'])
-let g:airline_section_c = airline#section#create(['%f'])
-let g:airline_section_x = airline#section#create([''])
-let g:airline_section_y = airline#section#create([''])
-let g:airline_section_z = airline#section#create_right(['%l', '%c'])
-if !exists('g:airline_symbols')
-  let g:airline_symbols = {}
-endif
-let g:airline_symbols.space = "\ua0"
-
-" let g:pymode = 1
-" let g:pymode_warnings = 1
-" let g:pymode_options_max_line_length = 80
-" let g:pymode_options_colorcolumn = 1
-" let g:pymode_quickfix_minheight = 0
-" let g:pymode_quickfix_maxheight = 3
-" let g:pymode_python = 'python'
-" let g:pymode_indent = 1
-" let g:pymode_syntax = 1
-" let g:pymode_lint_checkers = ["pylint"]
-" let g:pymode_rope = 0
-" let g:pymode_lint_ignore = ["E501", "W", "E712", "E711", "E722",]
-" let g:airline_theme='molokai'
-" let g:pymode_rope_complete_on_dot = 0
-" let g:pymode_virtualenv = 0
+set laststatus=2
+set noshowmode
+syntax on
 colorscheme monokai
+let g:lightline = {
+  \     'active': {
+  \         'left': [['mode', 'paste' ], ['readonly', 'filename', 'modified']],
+  \         'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
+  \     }
+  \ }
+let g:lightline.component_expand = {
+      \  'linter_checking': 'lightline#ale#checking',
+      \  'linter_warnings': 'lightline#ale#warnings',
+      \  'linter_errors': 'lightline#ale#errors',
+      \  'linter_ok': 'lightline#ale#ok',
+      \ }
+let g:lightline.component_type = {
+      \     'linter_checking': 'left',
+      \     'linter_warnings': 'warning',
+      \     'linter_errors': 'error',
+      \     'linter_ok': 'left',
+      \ }
+let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
+let g:fzf_nvim_statusline = 0 " disable statusline overwriting
+
+let g:ale_completion_enabled = 1
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_lint_on_text_changed = 'never'
+let g:ale_set_loclist = 0
+let g:ale_set_quickfix = 1
+let g:ale_open_list = 1
+let g:ale_list_window_size = 3

@@ -1,12 +1,13 @@
 [alias]
 	co = checkout
+    cm = "!git add .; git commit -m"
 	cim = commit -m
-    update = "!~/.git_update.sh"
+    update = "!git_update"
 	new = checkout -b
     sync="!python ~/.sync_master.py"
 	cleanup = "!git branch --merged master | grep -v '^*\\|master' | xargs -n 1 git branch -D"
     rcleanup = "!git fetch --prune; git branch --remote --merged | grep origin | grep -v '>' | grep -v master | xargs -L1 | cut -d"/" -f2- | xargs git push origin --delete;"
-    pr = "!python ~/.open_pull.py"
+    pr = "!git_pr"
     branch-current = rev-parse --symbolic-full-name --abbrev-ref HEAD
     number-of-commits-since-master = "! sh -c 'git log master..`git branch-current` --oneline | wc -l | tr -d \" \"'"
     squash = "! sh -c 'git rebase --interactive HEAD~`git number-of-commits-since-master`'"
@@ -14,7 +15,7 @@
     fcm = "!git log master..$(git branch-current) --oneline | tail -1 | cut -d ' ' -f2-"
     cfcm = "!git fcm | pbcopy"
     fp = "!git push origin $(git branch-current) -f"
-    w = "!git update 'WIP'"
+    w = "!git cm 'WIP'"
 [user]
 	name = First Last
 	email = youremail@email.com

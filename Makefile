@@ -111,7 +111,7 @@ tmuxinator: ruby
 
 
 .PHONY: vim-packages
-vim-packages: vim-pathogen vim-ctrlp vim-nerdtree vim-syntastic vim-airline vim-gitgutter vim-surround vim-easymotion vim-incsearch vim-YouCompleteMe vim-colors vim-ack vim-fugitive vim-rhubarb vim-tcomment vim-dart
+vim-packages: vim-pathogen vim-nerdtree vim-gitgutter vim-surround vim-easymotion vim-incsearch vim-YouCompleteMe vim-colors vim-ack vim-fugitive vim-rhubarb vim-tcomment vim-dart vim-lightline vim-ale vim-fzf vim-tmux-navigator
 
 .PHONY: vim-pathogen
 vim-pathogen:
@@ -120,14 +120,6 @@ vim-pathogen:
 		echo "Installing pathogen..."; \
 		mkdir -p ~/.vim/autoload ~/.vim/bundle && \
 		curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim; \
-	fi;
-
-.PHONY: vim-ctrlp
-vim-ctrlp:
-	@set -e; \
-	if [ ! -d ~/.vim/bundle/ctrlp.vim/ ] ; then \
-		echo "Installing ctrlp..."; \
-		git clone https://github.com/kien/ctrlp.vim.git ~/.vim/bundle/ctrlp.vim; \
 	fi;
 
 .PHONY: vim-nerdtree
@@ -145,17 +137,6 @@ vim-syntastic:
 		echo "Installing syntastic..."; \
 		git clone --depth=1 https://github.com/vim-syntastic/syntastic.git ~/.vim/bundle/syntastic; \
 	fi;
-
-
-.PHONY: vim-airline
-vim-airline:
-	@set -e; \
-	if [ ! -d ~/.vim/bundle/vim-airline/ ] ; then \
-		echo "Installing vim-airline..."; \
-		git clone https://github.com/vim-airline/vim-airline ~/.vim/bundle/vim-airline; \
-		git clone https://github.com/vim-airline/vim-airline-themes ~/.vim/bundle/vim-airline-themes; \
-	fi;
-
 
 .PHONY: vim-gitgutter
 vim-gitgutter:
@@ -258,4 +239,36 @@ vim-dart:
 	if [ ! -d !/.vim/bundle/dart-vim-plugin/ ]; then \
 		echo "Installing dart-vim-plugin..."; \
 		git clone git@github.com/dart-lang/dart-vim-plugin.git ~/.vim/bundle/dart-vim-plugin; \
+	fi;
+
+.PHONY: vim-fzf
+vim-fzf:
+	@set -e; \
+	if [ ! -d !/.vim/bundle/fzf.vim/ ]; then \
+		echo "Installing fzf.vim..."; \
+		git clone git@github.com:junegunn/fzf.vim.git ~/.vim/bundle/fzf.vim; \
+	fi;
+
+.PHONY: vim-lightline
+vim-lightline:
+	@set -e; \
+	if [ ! -d !/.vim/bundle/lightline.vim/ ]; then \
+		echo "Installing lightline.vim..."; \
+		git clone git@github.com:itchyny/lightline.vim.git ~/.vim/bundle/lightline.vim; \
+	fi;
+
+.PHONY: vim-ale
+vim-ale:
+	@set -e; \
+	if [ ! -d !/.vim/bundle/ale/ ]; then \
+		echo "Installing ale..."; \
+		git clone git@github.com:w0rp/ale.git ~/.vim/bundle/ale; \
+	fi;
+
+.PHONY: vim-tmux-navigator
+vim-tmux-navigator:
+	@set -e; \
+	if [ ! -d !/.vim/bundle/vim-tmux-navigator/ ]; then \
+		echo "Installing vim-tmux-navigator..."; \
+		git clone git@github.com:christoomey/vim-tmux-navigator.git ~/.vim/bundle/vim-tmux-navigator; \
 	fi;
