@@ -1,0 +1,14 @@
+tmux-battery
+tmux-continuum
+tmux-copycat
+tmux-fingers
+tmux-network-bandwidth
+tmux-pain-control
+tmux-prefix-highlight
+tmux-resurrect
+tmux-sensible
+tmux-simple-git-status
+tmux-urlview
+tmux-yank
+tpm
+vim-tmux-navigator
