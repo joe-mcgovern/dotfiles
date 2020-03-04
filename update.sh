@@ -11,6 +11,7 @@ cp ~/.git_update.sh .
 cp ~/.sync_master.py .
 cp ~/.open_pull.py .
 cp ~/.tmux.conf .
+cat ~/.vim/bundle > vim_plugins.txt
 echo "Files copied"
 echo "Pushing to git..."
 git add . > /dev/null

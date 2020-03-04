@@ -247,6 +247,7 @@ vim-fzf:
 	if [ ! -d !/.vim/bundle/fzf.vim/ ]; then \
 		echo "Installing fzf.vim..."; \
 		git clone git@github.com:junegunn/fzf.vim.git ~/.vim/bundle/fzf.vim; \
+		git clone git@github.com:junegunn/fzf.git ~/.vim/bundle/fzf; \
 	fi;
 
 .PHONY: vim-lightline

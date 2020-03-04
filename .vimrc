@@ -4,7 +4,7 @@ set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set ignorecase
-set tags=tags;/
+set tags=./tags;
 
 inoremap jk <ESC>
 let mapleader="\<Space>"
@@ -15,12 +15,7 @@ set linebreak
 " note trailing space at end of next line
 " set showbreak=>\ \ \
 autocmd BufWritePre * %s/\s\+$//e
-nnoremap th  :tabfirst<CR>
-nnoremap tp  :tabprev<CR>
-nnoremap tl  :tablast<CR>
-nnoremap tn  :tabnext<CR>
-nnoremap td  :tabclose<CR>
-nnoremap tc  :tabedit<Space>
+nnoremap tn :TestNearest<CR>
 nnoremap tt  :NERDTreeToggle<CR>
 nnoremap <leader>. :CtrlPTag<cr>
 map fz :Files<CR>
@@ -34,12 +29,32 @@ if exists('$DOTFILES')
 endif
 filetype off
 
+let g:ale_linters = {'python': ['pyls'], 'javascript': ['jshint']}
+let g:ale_completion_enabled = 1
+let g:ale_completion_delay = 200
+let g:ale_lint_delay = 200
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_save = 1
+" Only run linters named in ale_linters settings.
+let g:ale_linters_explicit = 1
+nmap <silent> <C-k> <Plug>(ale_previous_wrap)
+nmap <silent> <C-j> <Plug>(ale_next_wrap)
+let g:ale_lint_on_text_changed = 0
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
+let g:ale_open_list = 1
+let g:ale_list_window_size = 3
+let g:ale_virtual_env_dir_names = [$VIRTUAL_ENV]
+" Have clicking tab and shift-tab cycle through autocomplete suggestions
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
+
+
 execute pathogen#infect()
 execute pathogen#helptags()
 filetype plugin indent on
 
 autocmd StdinReadPre * let s:std_in=1
-" autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
 autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.jsx set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2
@@ -81,13 +96,17 @@ nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 cnoreabbrev Ag Ag!
 cnoreabbrev Gbrowse Gbrowse @upstream
+cnoreabbrev Greadm Gread master:%
 nnoremap <Leader>a :Ag!<Space>
+
+map <F5>    :ImportName<CR>
+map <C-F5>  :ImportNameHere<CR>
 
 let g:EasyMotion_do_mapping = 0 " Disable default mappings
 
 " Jump to anywhere you want with minimal keystrokes, with just one key
 " binding.
-" " `s{char}{label}`
+" `s{char}{label}`
 nmap s <Plug>(easymotion-overwin-f)
 let g:EasyMotion_smartcase = 1
 function! s:config_easyfuzzymotion(...) abort
@@ -108,11 +127,16 @@ let g:NERDSpaceDelims = 1
 
 " Dont show scratch preview for autocomplete
 " set completeopt-=preview
+set completeopt=menu,menuone,preview,noselect,noinsert
 
-" let g:easytags_dynamic_files = 1
-" let g:easytags_async = 1
-" let g:easytages_syntax_keyword = 'always'
-" autocmd FileType python let b:easytags_auto_highlight = 0
+let g:easytags_dynamic_files = 1
+let g:easytages_syntax_keyword = 'always'
+let g:easytags_async = 1
+let g:easytags_auto_highlight=0
+let g:ycm_collect_identifiers_from_tags_files=0
+
+let g:autoflake_remove_all_unused_imports=1
+let g:autoflake_disable_show_diff=1
 
 set laststatus=2
 set noshowmode
@@ -120,9 +144,12 @@ syntax on
 colorscheme monokai
 let g:lightline = {
   \     'active': {
-  \         'left': [['mode', 'paste' ], ['readonly', 'filename', 'modified']],
-  \         'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding']]
-  \     }
+  \         'left': [['mode', 'paste' ], ['gitbranch', 'readonly', 'relativepath', 'modified']],
+  \         'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
+  \     },
+  \     'component_function': {
+  \         'gitbranch': 'fugitive#head',
+  \     },
   \ }
 let g:lightline.component_expand = {
       \  'linter_checking': 'lightline#ale#checking',
@@ -136,14 +163,11 @@ let g:lightline.component_type = {
       \     'linter_errors': 'error',
       \     'linter_ok': 'left',
       \ }
-let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
+" let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
 let g:fzf_nvim_statusline = 0 " disable statusline overwriting
 
-let g:ale_completion_enabled = 1
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_lint_on_text_changed = 'never'
-let g:ale_set_loclist = 0
-let g:ale_set_quickfix = 1
-let g:ale_open_list = 1
-let g:ale_list_window_size = 3
+let test#strategy = "dispatch"
+let test#python#runner = 'nose'
+
+" Automatically close quickfix/loclist when main buffer is closed
+autocmd WinEnter * if &buftype ==# 'quickfix' && winnr('$') == 1 | quit | endif
