@@ -9,6 +9,5 @@ tmux-resurrect
 tmux-sensible
 tmux-simple-git-status
 tmux-urlview
-tmux-yank
 tpm
 vim-tmux-navigator

@@ -1,0 +1,18 @@
+format = """
+$python\
+$kubernetes\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$custom\
+$cmd_duration\
+$line_break\
+$shell\
+$character"""
+
+[python]
+format = '[(\($symbol$virtualenv $version\) )]($style)'
+
+[kubernetes]
+disabled = false

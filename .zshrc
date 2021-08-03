@@ -5,35 +5,9 @@ ZSH=$HOME/.oh-my-zsh
 # Look in ~/.oh-my-zsh/themes/
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
-ZSH_THEME="spaceship"
+# ZSH_THEME="spaceship"
 
-SPACESHIP_PROMPT_ORDER=(
-venv
-dir
-git
-line_sep
-char
-)
-
-SPACESHIP_PROMPT_ADD_NEWLINE="true"
-SPACESHIP_CHAR_SYMBOL=" \uf0e7"
-SPACESHIP_CHAR_PREFIX="\uf296"
-SPACESHIP_CHAR_SUFFIX=(" ")
-SPACESHIP_PROMPT_DEFAULT_PREFIX="$USER"
-SPACESHIP_PROMPT_FIRST_PREFIX_SHOW="true"
-SPACESHIP_USER_SHOW="false"
-SPACESHIP_HOST_SHOW="false"
-SPACESHIP_PACKAGE_SHOW="false"
-SPACESHIP_NODE_SHOW="false"
-SPACESHIP_RUBY_SHOW="false"
-SPACESHIP_VENV_PREFIX="("
-SPACESHIP_VENV_SUFFIX=") "
-SPACESHIP_VENV_COLOR="white"
-SPACESHIP_KUBECONTEXT_SHOW="false"
-SPACESHIP_PYENV_SHOW="false"
-
-SPACESHIP_ROOT=$ZSH_CUSTOM/themes/spaceship-prompt
-
+# ORDER
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
@@ -71,6 +45,9 @@ plugins=(
     # Activates the ZSH completion plugin shipped together with the aws command-line tool
     aws
 
+    # Install completions for asdf version manager
+    asdf
+
     # Auto complete arguments and options for all docker commands.
     docker
 
@@ -82,13 +59,11 @@ plugins=(
     # regularly to the latest git upstream version.
     gitfast
 
-    # Provides a couple of convenient aliases for using the history command
-    # to examine your command line history.
-    history
+    # Provides auto-completion for helm
+    helm
 
-    # Open jira issues
-    # Example: jira TICKET-1234
-    jira
+    # Auto-completions for the pass password manager
+    pass
 
     # Completion plugin for the pip command
     pip
@@ -97,14 +72,10 @@ plugins=(
     python
 
     # Adds several options for effecting the startup behavior of tmux
-    tmux
+    # tmux
 
     # Completions for tmuxinator
-    tmuxinator
-
-    # Adds several commands to do web search.
-    # Example: google some thing i want to find on google
-    web-search
+    # tmuxinator
 
     # Suggests commands as you type, based on command history
     zsh-autosuggestions
@@ -118,118 +89,62 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
-export ZSH_TMUX_AUTOSTART=true
+# Add /usr/local/bin to path
+export PATH=/usr/local/bin/:$PATH
 
-# Customize to your needs...
-export PATH=$PATH:~/.bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:/usr/bin:/bin:/usr/sbin:/sbin:/...
+# Add globally installed npm packages to path
 export PATH="$HOME/.npm-packages/bin:$PATH"
-export PATH=/opt/local/bin:/opt/local/sbin:$PATH
-export PATH=$HOME/Library/Python/2.7/bin:$PATH
+
+# Go environment configuration
 export GOPATH=$HOME/go-workspace
-export GOROOT=/usr/local/opt/go/libexec
+export GOROOT=/usr/local/go
+export GO111MODULE=on
 export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:$GOROOT/bin
-export ANDROID_HOME=/usr/local/Cellar/android-sdk/24.4.1_1/
-export JAVA_HOME=/Library/Java/Home
 
-export PYENV_ROOT="${HOME}/.pyenv"
-
-if [ -d "${PYENV_ROOT}" ]; then
-    export PATH="${PYENV_ROOT}/bin:${PATH}"
-    eval "$(pyenv init -)"
-fi
-
-# Setup virtualenv home
+# Python environment configuration
+export PYTHONPATH=/usr/bin/python
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
 export WORKON_HOME=$HOME/Envs
 source /usr/local/bin/virtualenvwrapper.sh
-
 # Tell pyenv-virtualenvwrapper to use pyenv when creating new Python environments
 export PYENV_VIRTUALENVWRAPPER_PREFER_PYVENV="true"
+
+# Talisman environment configuration
+export TALISMAN_HOME=/Users/josephmcgovern/.talisman/bin
+
+# Set the length of generated passwords for pass library
+export PASSWORD_STORE_GENERATED_LENGTH=42
+
+# Setup python virtualenv home
 
 DEFAULT_USER=“josephmcgovern”
 
 ##########
 # Normal Alias Shortcuts
 ##########
-alias lla='ls -la'
-alias la='ls -a'
-alias ls='ls -GF'
-alias lsa='ls -a -GF'
-alias lsla='ls -lah -GF'
-alias lsl='ls -lh -GF'
-alias pw='pwd'
-alias ch='cd ~'
-alias cu='cd ..'
-alias 'cd-'='cd -'
-alias ls='ls -GF'
-alias aws_keys='~/local_scripts/get_aws_keys.sh'
-alias tmux='tmux -2'
-alias tmux_gae='~/local_scripts/tmux_gae.sh'
-# alias ctags="`brew --prefix`/bin/ctags"
-alias wbuild="/Users/josephmcgovern/.cargo/bin/workiva-build-cli"
-alias mux="tmuxinator"
-alias cover="open cover/index.html"
+alias awsk="pbpaste > ~/.aws/credentials"
+alias wbuild="/usr/local/bin/workiva-build-cli"
 alias gif="~/local_scripts/.giffify.sh"
-alias test='TEST_FLAG=true python run_nosetests.py'
-alias open-builds='~/wDev/open_builds/target/release/open_builds'
-alias open-tests='~/wDev/open_tests/target/release/open_tests'
+alias talisman=$TALISMAN_HOME/talisman_darwin_amd64
+alias k="kubectl"
 
-export PATH=/usr/local/bin:$PATH
-export PYTHONPATH=/usr/bin/python
+# Define encrypt function that will AES 256 encrypt a file
+encrypt(){
+    outfile="$@.enc"
+    openssl enc -aes-256-cbc -salt -in "$@" -out $outfile
+    echo "Encrypted: $outfile"
+}
 
-# export NVM_DIR="$HOME/.nvm"
-# [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-
-###-tns-completion-start-###
-if [ -f /Users/josephmcgovern/.tnsrc ]; then
-    source /Users/josephmcgovern/.tnsrc
-fi
-###-tns-completion-end-###
-
-###-tns-completion-start-###
-if [ -f /Users/josephmcgovern/.tnsrc ]; then
-    source /Users/josephmcgovern/.tnsrc
-fi
-###-tns-completion-end-###
-
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-eval "$(direnv hook zsh)"
-
-# eval "$(pyenv init -)"
-# eval "$(pyenv virtualenv-init -)"
-#
+# Set default editor to nvim
 export EDITOR="/usr/local/bin/nvim"
+
+# Set default shell to zsh
 export SHELL="/bin/zsh"
 
-source ~/.bin/tmuxinator.zsh
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
-
+# Use rg instead of fzf
 export FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!{.git,node_modules}/*" 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
-source $(dirname $(gem which colorls))/tab_complete.sh
-# alias ls='colorls --light --sort-dirs'
-# alias lc='colorls --tree --light'
-
-if which ruby >/dev/null && which gem >/dev/null; then
-    PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
-fi
-
-export PATH=$PATH:/opt/apache-maven/bin
-
-# Configure talisman. Talisman checks for secrets being committed in git
-# repositories
-export TALISMAN_HOME=/Users/josephmcgovern/.talisman/bin
-alias talisman=$TALISMAN_HOME/talisman_darwin_amd64
 
 # Add w-secrets to environment
 if [ -f ~/.w_secrets.sh ]; then
@@ -248,3 +163,29 @@ pastefinish() {
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
+
+
+# The next line updates PATH for the Google Cloud SDK.
+if [ -f '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/josephmcgovern/google-cloud-sdk/path.zsh.inc'; fi
+
+# The next line enables shell command completion for gcloud.
+if [ -f '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/josephmcgovern/google-cloud-sdk/completion.zsh.inc'; fi
+
+# Define the language & locale
+export LC_ALL="en_US.UTF-8"
+export LANG="en_US.UTF8"
+
+# Define rpg (a function that behaves like cd)
+RPG_CLI=/usr/local/bin/rpg
+rpg () {
+   $RPG_CLI "$@"
+   cd "$($RPG_CLI --pwd)"
+}
+
+# Configure pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init --path)"
+
+# Initialize starship theme
+eval "$(starship init zsh)"

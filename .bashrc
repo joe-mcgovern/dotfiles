@@ -14,3 +14,4 @@ export PATH="$PATH:$HOME/.rvm/bin"
 export TALISMAN_HOME=/Users/josephmcgovern/.talisman/bin
 alias talisman=$TALISMAN_HOME/talisman_darwin_amd64
 # <<< talisman <<<
+source "$HOME/.cargo/env"
