@@ -1,8 +1,0 @@
-fileignoreconfig:
-- filename: .bashrc
-  checksum: 4d8e7b614e70e5ec5d9ba4aaf9c746f11c26abf98e262b1c3e77ae724a24ab17
-  ignore_detectors: []
-- filename: .zshrc
-  checksum: f45112db680691cea82790e52951558e2a79dbc98ae421b149bee1c81a2fb841
-  ignore_detectors: []
-scopeconfig: []
