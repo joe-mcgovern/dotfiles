@@ -1,3 +1,4 @@
+set relativenumber
 set number
 set encoding=utf-8
 scriptencoding utf-8
@@ -87,7 +88,7 @@ autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.jsx set shiftwidth=2 | set softtabstop=2 | set tabstop=2
 autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2 expandtab
 autocmd BufReadPre *.html set shiftwidth=2 | set softtabstop=2 | set tabstop=2
-autocmd BufReadPre *.go set shiftwidth=2 | set softtabstop=2 | set tabstop=2 expandtab
+autocmd BufReadPre *.go set shiftwidth=2 expandtab | set softtabstop=2 expandtab | set tabstop=2 expandtab
 " 50 for subject, 72 for body
 autocmd BufReadPre  *COMMIT_EDITMSG set colorcolumn=50,72
 autocmd WinEnter *zsh resize 12
@@ -140,7 +141,8 @@ endfunction
 
 noremap <silent><expr> <Leader>/ incsearch#go(<SID>config_easyfuzzymotion())
 
-set mouse=a
+" Enable mouse-clicking
+" set mouse=a
 
 let g:NERDSpaceDelims = 1
 
@@ -202,10 +204,10 @@ let g:ale_sign_warning = '⚠'
 let g:airline#extensions#ale#enabled = 1
 let g:go_imports_autosave = 1
 " Let ALE handle code completion, definitions, etc
-let g:go_gopls_enabled = 0
-let g:go_def_mode = 0
-let g:go_code_completion_enabled = 0
-let g:go_meta_linter_enabled = 0
+" let g:go_gopls_enabled = 1
+" let g:go_def_mode = 1
+" let g:go_code_completion_enabled = 0
+" let g:go_meta_linter_enabled = 0
 
 " Don't let startify change the directory
 let g:startify_change_to_dir = 0

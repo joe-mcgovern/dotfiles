@@ -10,6 +10,7 @@ cp ~/.config/starship.toml .
 sed -i "" 's/name = .*/name = First Last/' .gitconfig
 sed -i "" 's/email = .*/email = youremail@email.com/' .gitconfig
 ls ~/.vim/bundle > vim_plugins.txt
+find ~/.vim/pack -name '.git' >> vim_plugins.txt
 ls ~/.tmux/plugins/ > tmux_plugins.txt
 echo "Files copied"
 echo "Pushing to git..."

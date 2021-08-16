@@ -182,6 +182,9 @@ rpg () {
    cd "$($RPG_CLI --pwd)"
 }
 
+# Initialize wk tool
+source ~/.wk/profile
+
 # Configure pyenv
 export PYENV_ROOT="$HOME/.pyenv"
 export PATH="$PYENV_ROOT/bin:$PATH"

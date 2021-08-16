@@ -13,6 +13,7 @@ lightline.vim
 nerdtree
 nvim-yarp
 tcomment_vim
+vim-abolish
 vim-angular
 vim-autoflake
 vim-dispatch
@@ -33,3 +34,7 @@ vim-test
 vim-tmux-navigator
 vim-zettel
 vimwiki
+/Users/josephmcgovern/.vim/pack/tpope/start/vim-sensible/.git
+/Users/josephmcgovern/.vim/pack/plugins/start/vim-toml/.git
+/Users/josephmcgovern/.vim/pack/plugins/start/vim-go/.git
+/Users/josephmcgovern/.vim/pack/joe-mcgovern/start/vim-argo/.git
