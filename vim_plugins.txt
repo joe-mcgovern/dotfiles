@@ -3,8 +3,6 @@ ack.vim
 ale
 delimitMate
 ferret
-fzf
-fzf.vim
 incsearch-easymotion.vim
 incsearch-fuzzy.vim
 incsearch.vim
@@ -38,3 +36,4 @@ vimwiki
 /Users/josephmcgovern/.vim/pack/plugins/start/vim-toml/.git
 /Users/josephmcgovern/.vim/pack/plugins/start/vim-go/.git
 /Users/josephmcgovern/.vim/pack/joe-mcgovern/start/vim-argo/.git
+/Users/josephmcgovern/.vim/pack/junegunn/start/fzf.vim/.git

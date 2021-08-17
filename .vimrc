@@ -8,6 +8,14 @@ set softtabstop=4
 set ignorecase
 set tags=./tags;
 set hidden
+" Enter normal mode (from insert mode) by typing jk
+inoremap jk <ESC>
+let mapleader=","
+set encoding=utf-8
+set expandtab
+set wrap
+set linebreak
+
 let python="/usr/bin/python"
 let python3="/usr/local/bin/python3"
 
@@ -16,12 +24,19 @@ nnoremap ev :e $MYVIMRC<CR>
 " Reload vimrc using `rv`
 nnoremap rv :w!<Esc>:source $MYVIMRC<CR>
 
-inoremap jk <ESC>
-let mapleader=","
-set encoding=utf-8
-set expandtab
-set wrap
-set linebreak
+" Decrease window size
+nnoremap <Leader><C-k> :resize -5<CR>
+" Increase window size
+nnoremap <Leader><C-j> :resize +5<CR>
+
+" Add keybindings for terminal mode
+tnoremap <Esc> <C-\><C-n>
+tnoremap jk <C-\><C-n>
+tnoremap <C-h> <C-\><C-n><C-w>h
+tnoremap <C-j> <C-\><C-n><C-w>j
+tnoremap <C-k> <C-\><C-n><C-w>k
+tnoremap <C-l> <C-\><C-n><C-w>l
+
 nnoremap tn :TestNearest<CR>
 nnoremap tt  :NERDTreeToggle<CR>
 nnoremap <Leader>b :buffers<CR>:buffer<Space>
@@ -68,8 +83,8 @@ inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
 
 let g:zettel_fzf_command = "rg"
-let g:zettel_format = "%y%m%d-%H%M.md.gpg"
-let g:zettel_random_chars = 0
+let g:zettel_format = "%y/%m/%d-%H:%M-%title.md"
+let g:zettel_random_chars = 1
 set rtp+=/usr/local/opt/fzf
 
 " add ~/.vim to the packpath so windows works like linux
@@ -276,10 +291,8 @@ let g:gutentags_ctags_exclude = [
 let g:vimwiki_global_ext = 0
 let g:vimwiki_option_syntax = 'markdown'
 let g:vimwiki_list = [
-    \ {'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md.gpg'},
+    \ {'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md', 'links_space_char': '-'},
     \ ]
-let g:vimwikienc_dir = "~/vimwiki-enc"
-let g:vimwikienc_gpg_id = "6329AD3A99B4DBF0"
 
 " Automatically close quickfix/loclist when main buffer is closed
 autocmd WinEnter * if &buftype ==# 'quickfix' && winnr('$') == 1 | quit | endif
