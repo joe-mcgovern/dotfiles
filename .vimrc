@@ -1,232 +1,265 @@
-set relativenumber
-set number
-set encoding=utf-8
-scriptencoding utf-8
-set tabstop=4
-set shiftwidth=4
-set softtabstop=4
-set ignorecase
-set tags=./tags;
-set hidden
-" Enter normal mode (from insert mode) by typing jk
-inoremap jk <ESC>
-let mapleader=","
-set encoding=utf-8
+" Use za in normal mode to unfold any section
+" Use zR to expand all folds
+" Use zM to close all folds
+
+" Basic settings ---------------------- {{{
+
+" Configure python to be python3
+set pyxversion=3
+" Use spaces instead of tabs
 set expandtab
-set wrap
-set linebreak
 
-let python="/usr/bin/python"
-let python3="/usr/local/bin/python3"
+" Set default number of spaces per tab
+set tabstop=4
 
-" Open vimrc for editing using `ev`
-nnoremap ev :e $MYVIMRC<CR>
-" Reload vimrc using `rv`
-nnoremap rv :w!<Esc>:source $MYVIMRC<CR>
+" Set default number of spaces per indentation
+set shiftwidth=4
 
-" Decrease window size
-nnoremap <Leader><C-k> :resize -5<CR>
-" Increase window size
-nnoremap <Leader><C-j> :resize +5<CR>
+" Set <Leader> key to `,`
+let mapleader=","
 
-" Add keybindings for terminal mode
-tnoremap <Esc> <C-\><C-n>
-tnoremap jk <C-\><C-n>
-tnoremap <C-h> <C-\><C-n><C-w>h
-tnoremap <C-j> <C-\><C-n><C-w>j
-tnoremap <C-k> <C-\><C-n><C-w>k
-tnoremap <C-l> <C-\><C-n><C-w>l
-
-nnoremap tn :TestNearest<CR>
-nnoremap tt  :NERDTreeToggle<CR>
-nnoremap <Leader>b :buffers<CR>:buffer<Space>
-map fz :Files<CR>
+" Allow copying to / pasting from system clipboard
 set clipboard=unnamed
-set colorcolumn=79
 
+" Configure line numbers
+set number
+set relativenumber
+
+" Ignore case when searching buffer
+set ignorecase
+
+" Allow `:find` to search recursively
+set path+=**
+
+" Use this vim configuration when editing a vimrc file
 set nocp
-if exists('$DOTFILES')
-    source $DOTFILES/vim/autoload/pathogen.vim
-    source $DOTFILES/vim/vimrc
-endif
-filetype off
 
-let g:ale_linters = {
-            \    'python': ['pyls'],
-            \    'javascript': ['jshint'],
-            \    'go': ['gopls'],
-            \    'rust': ['rls'],
-            \}
-let g:ale_fixers = {
-            \    'rust': ['rustfmt'],
-            \    'python': ['black', 'isort'],
-            \}
-let g:ale_completion_enabled = 1
-let g:ale_completion_delay = 100
-let g:ale_fix_on_save = 1
-let g:ale_lint_delay = 100
-let g:ale_lint_on_enter = 1
-let g:ale_lint_on_save = 1
-" Only run linters named in ale_linters settings.
-let g:ale_linters_explicit = 1
-nmap <silent> <C-k> <Plug>(ale_previous_wrap)
-nmap <silent> <C-j> <Plug>(ale_next_wrap)
-let g:ale_lint_on_text_changed = 0
-let g:ale_set_loclist = 1
-let g:ale_set_quickfix = 0
-let g:ale_open_list = 1
-let g:ale_list_window_size = 3
-let g:ale_virtual_env_dir_names = [$VIRTUAL_ENV]
-let g:rustfmt_autosave = 1
-" Have clicking tab and shift-tab cycle through autocomplete suggestions
-inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
-
-let g:zettel_fzf_command = "rg"
-let g:zettel_format = "%y/%m/%d-%H:%M-%title.md"
-let g:zettel_random_chars = 1
-set rtp+=/usr/local/opt/fzf
-
-" add ~/.vim to the packpath so windows works like linux
-set packpath^=~/.vim
-set runtimepath^=~/.vim
-
-execute pathogen#infect()
-execute pathogen#helptags()
-
+" Enable syntax highlighting
 syntax on
-filetype plugin indent on
-set nocompatible
 
-autocmd StdinReadPre * let s:std_in=1
-autocmd BufReadPre *.js set shiftwidth=2 | set softtabstop=2 | set tabstop=2
-autocmd BufReadPre *.jsx set shiftwidth=2 | set softtabstop=2 | set tabstop=2
-autocmd BufReadPre *.yaml set shiftwidth=2 | set softtabstop=2 | set tabstop=2 expandtab
-autocmd BufReadPre *.html set shiftwidth=2 | set softtabstop=2 | set tabstop=2
-autocmd BufReadPre *.go set shiftwidth=2 expandtab | set softtabstop=2 expandtab | set tabstop=2 expandtab
-" 50 for subject, 72 for body
-autocmd BufReadPre  *COMMIT_EDITMSG set colorcolumn=50,72
-autocmd WinEnter *zsh resize 12
+" Highlight a column to know when to break
+set colorcolumn=80
 
-set runtimepath^=~/.vim/bundle/ctrlp.vim
-let g:ctrlp_map = '<c-p>'
-let g:ctrlp_cmd = 'CtrlPLastMode'
-let g:ctrlp_by_filename = 0
-let g:ctrlp_extensions = ['line']
-set wildignore+=*/.git/*,*/.hg/*,*/.svn/*,*/cover/*,*/node_modules/*,*.pyc,*/venv/*,*/lib/*,*src/static/*
+" Highlight all matches when searching
+set hlsearch
 
-if has('nvim')
-    tnoremap <Esc> <C-\><C-n>
-    tnoremap jk <C-\><C-n>
-    tnoremap <A-h> <C-\><C-n><C-w>h
-    tnoremap <A-j> <C-\><C-n><C-w>j
-    tnoremap <A-k> <C-\><C-n><C-w>k
-    tnoremap <A-l> <C-\><C-n><C-w>l
-else
-    set term=screen-256color
-endif
+" Set syntax theme to monokai. Vim has some built in schemes, but
+" custom ones can be added via the ~/.vim/colors directory
+colorscheme monokai
 
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-cnoreabbrev Ag Ag!
-cnoreabbrev Greadm Gread master:%
-nnoremap <Leader>a :Ag!<Space>
-
-map <F5>    :ImportName<CR>
-map <C-F5>  :ImportNameHere<CR>
-
-let g:EasyMotion_do_mapping = 0 " Disable default mappings
-
-" Jump to anywhere you want with minimal keystrokes, with just one key
-" binding.
-" `s{char}{label}`
-nmap s <Plug>(easymotion-overwin-f)
-let g:EasyMotion_smartcase = 1
-function! s:config_easyfuzzymotion(...) abort
-      return extend(copy({
-        \   'converters': [incsearch#config#fuzzyword#converter()],
-        \   'modules': [incsearch#config#easymotion#module({'overwin': 1})],
-        \   'keymap': {"\<CR>": '<Over>(easymotion)'},
-        \   'is_expr': 0,
-        \   'is_stay': 1
-        \ }), get(a:, 1, {}))
+" Strip trailing whitespace on save
+function StripTrailingWhitespace ()
+    " don't strip on these filetypes
+    if &ft =~ 'markdown'
+        return
+    endif
+    %s/\s\+$//e
 endfunction
 
-noremap <silent><expr> <Leader>/ incsearch#go(<SID>config_easyfuzzymotion())
+augroup strip_whitespace
+  autocmd!
+  autocmd BufWritePre * call StripTrailingWhitespace()
+augroup END
 
-" Enable mouse-clicking
-" set mouse=a
 
-let g:NERDSpaceDelims = 1
+" }}}
 
-" Dont show scratch preview for autocomplete
-" set completeopt-=preview
-set completeopt=menu,menuone,preview,noselect,noinsert
+" Global Mappings ---------------------- {{{
+" Use `jk` to go into normal mode
+inoremap jk <ESC>
 
-let g:easytags_dynamic_files = 1
-let g:easytages_syntax_keyword = 'always'
-let g:easytags_async = 1
-let g:easytags_auto_highlight=0
-let g:ycm_collect_identifiers_from_tags_files=0
+" Use magic regex all the time! Magic regex is the type of regex that is
+" normally used in other languages. Also, enable hlsearch even if it was
+" previously disabled.
+nnoremap / :set hlsearch<cr>/\v
 
-let g:autoflake_remove_all_unused_imports=1
-let g:autoflake_disable_show_diff=1
+" Grep for word under cursor
+nnoremap <leader>G :silent execute "RG \\b" . expand("<cword>") . "\\b"<cr>
 
-set laststatus=2
-set noshowmode
-colorscheme monokai
+" Find/replace in project using ripgrep
+" This is now automatically defined in the search-and-replace plugin I wrote.
+" nnoremap <leader>R :call SearchAndReplace()<CR>
+
+" Open file under cursor
+" Don't do this - just use gf ("go to file")
+" nnoremap <leader>o gf
+
+" Toggle search highlight
+nnoremap <leader>h :set hlsearch!<CR>
+
+" Map next/previous quickfix error
+nnoremap <leader>ne :cnext<CR>
+nnoremap <leader>pe :cprevious<CR>
+
+" Open vimrc for editing using `ev`
+nnoremap ev :split $MYVIMRC<CR>
+" Reload vimrc using `rv`
+nnoremap rv :source $MYVIMRC<CR>
+
+" Override vim's default 'jump to tag' command with ALE's. I did this because
+" ALE's seemed to do a better job of jumping to the actual defintion (as
+" opposed to jumping to the nearest import or something).
+" nnoremap <C-]> :keepjumps ALEGoToDefinition<CR>
+nnoremap <C-]> :ALEGoToDefinition<CR>
+" Use <Leader>J to jump to the definition of the word under the cursor.
+nnoremap <Leader>J :ALEGoToDefinition<CR>
+
+" Use <Leader>I to attempt to import the word under cursor
+nnoremap <Leader>I :ALEImport<CR>
+
+" Open up the list of buffers using fzf
+nnoremap <Leader>b :Buffers<CR>
+
+" Explore the file tree
+nnoremap <Leader>e :NERDTreeToggle<CR>
+
+" Start fzf using fz
+nnoremap fz :Files<CR>
+
+" Use Control-d to delete the current line in insert mode
+inoremap <C-d> <esc>dd$a
+" Use Leader-U to uppercase the current word in normal mode
+nnoremap <Leader>U viwU
+" Use Leader-L to lowercase the current word in normal mode
+nnoremap <Leader>L viwu
+
+" Use <Leader>' to surround current visual selection in single quotes
+vnoremap <leader>' <esc>`<i'<esc>`>lli'<esc>
+" Use <Leader>" to surround current visual selection in double quotes
+vnoremap <leader>" <esc>`<i"<esc>`>lli"<esc>
+
+" Use :RG <regex> to invoke ripgrep with the provided regex and have fzf
+" render the results.
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+" }}}
+
+" Filetype specific mappings ---------------------- {{{
+
+" Function used by abbreviations to eat trailing whitespace
+func Eatchar(pat)
+  let c = nr2char(getchar(0))
+  return (c =~ a:pat) ? '' : c
+endfunc
+
+" python {{{
+augroup filetype_python
+  autocmd!
+  " Use <leader>cfn to copy/paste the current function and drop you into
+  " insert mode to replace the function name.
+  " You can think of this as "copy function"
+  autocmd FileType python nnoremap <buffer> <leader>ctfn ?^\s*def <CR>?^$<CR>:nohlsearch<CR>V/^\s*def <CR>n?^$<CR>y/^\s*def <CR>n?^$<CR>dd"0P/^\s*def <CR>:nohlsearch<CR>ffwcw
+  " Use <leader>ctfn to copy/paste the current function and drop you into
+  " insert mode to replace the function name, prefixing the function name with
+  " test_
+  " You can think of this command like "copy test function"
+  autocmd FileType python nnoremap <buffer> <leader>ctfn ?^\s*def <CR>?^$<CR>:nohlsearch<CR>V/^\s*def <CR>n?^$<CR>y/^\s*def <CR>n?^$<CR>dd"0P/^\s*def <CR>:nohlsearch<CR>ffwwi_
+
+  " Use <leader>dfn to delete the current function.
+  " You can think of this command like "delete function"
+  autocmd FileType python nnoremap <buffer> <leader>dfn ?^\s*def <CR>?^$<CR>:nohlsearch<CR>V/^\s*def <CR>n?^$<CR>:nohlsearch<CR>kd
+  autocmd FileType python onoremap <buffer> fn :<c-u>execute "normal! ?^\s*def \r?^$\r:nohlsearch\rV/^\s*def \rn?^$\r"<CR>:nohlsearch<CR>
+
+augroup END
+" }}}
+
+" javascript {{{
+augroup filetype_javascript
+  autocmd!
+  " Use fp in insert mode to add a new print
+  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> clg console.log()<left><C-R>=Eatchar('\s')<CR>
+  " Use iff in insert mode to add a new if statement
+  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> iff if()<left><C-R>=Eatchar('\s')<CR>
+  " Use rn to add a return statement
+  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> rn return
+  " TRAINING!
+  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> return NOPENOPENOPE
+augroup END
+" }}}
+
+" gitcommit {{{
+augroup filetype_gitcommit
+  autocmd!
+  " Highlight columns for git commit message 50 for subject, 72 for body
+  autocmd FileType gitcommit set colorcolumn=50,72
+  autocmd FileType gitcommit setlocal spell spelllang=en_us
+augroup END
+" }}}
+
+" markdown {{{
+augroup filetype_markdown
+  autocmd!
+  autocmd FileType markdown setlocal spell spelllang=en_us
+augroup END
+" }}}
+
+" Replace hashtags with double quotes for vimrc files
+function ReplaceStartingHashtagsWithDoubleQuotes ()
+  %s/^\(\s*\)#/\1"/e
+endfunction
+
+" vim {{{
+augroup filetype_vim
+  autocmd!
+  autocmd FileType vim setlocal foldmethod=marker foldlevelstart=0 shiftwidth=2 tabstop=2
+  autocmd Filetype vim iabbrev <buffer> == ==#
+  autocmd BufWritePre *.vimrc call ReplaceStartingHashtagsWithDoubleQuotes()
+augroup END
+" }}}
+
+" }}}
+
+" Status line ---------------------- {{{
+" Configure status line
 let g:lightline = {
   \     'active': {
   \         'left': [['mode', 'paste' ], ['gitbranch', 'readonly', 'relativepath', 'modified']],
-  \         'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
   \     },
   \     'component_function': {
   \         'gitbranch': 'fugitive#head',
   \     },
   \ }
-let g:lightline.component_expand = {
-      \  'linter_checking': 'lightline#ale#checking',
-      \  'linter_warnings': 'lightline#ale#warnings',
-      \  'linter_errors': 'lightline#ale#errors',
-      \  'linter_ok': 'lightline#ale#ok',
-      \ }
-let g:lightline.component_type = {
-      \     'linter_checking': 'left',
-      \     'linter_warnings': 'warning',
-      \     'linter_errors': 'error',
-      \     'linter_ok': 'left',
-      \ }
-" let g:lightline.active = { 'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]] }
-let g:fzf_nvim_statusline = 0 " disable statusline overwriting
 
-let test#strategy = "neovim"
-" let test#python#runner = 'nose'
-let g:test#preserve_screen = 1
+" }}}
 
-let g:go_highlight_build_constraints = 1
-let g:go_highlight_extra_types = 1
-let g:go_highlight_fields = 1
-let g:go_highlight_functions = 1
-let g:go_highlight_methods = 1
-let g:go_highlight_operators = 1
-let g:go_highlight_structs = 1
-let g:go_highlight_types = 1
-let g:go_auto_sameids = 1
-let g:ale_sign_error = '⤫'
-let g:ale_sign_warning = '⚠'
-let g:airline#extensions#ale#enabled = 1
-let g:go_imports_autosave = 1
-" Let ALE handle code completion, definitions, etc
-" let g:go_gopls_enabled = 1
-" let g:go_def_mode = 1
-" let g:go_code_completion_enabled = 0
-" let g:go_meta_linter_enabled = 0
+" Plugin configuration ---------------------- {{{
+"
+" This was for a custom plugin I made for completions within gitlab ci.
+" I have since installed deoplete which takes care of this for me.
+" let g:search_replace_pre_execution_options = {
+"       \ "g:ale_fix_on_save": 0
+"       \}
 
-" Don't let startify change the directory
-let g:startify_change_to_dir = 0
+" {{{ Deoplete
 
+set runtimepath+=~/.vim/pack/plugins/start/deoplete.nvim
+let g:deoplete#enable_at_startup = 1
+call deoplete#custom#option({
+      \ 'auto_complete_delay': 100,
+      \ 'max_list': 20,
+      \ 'yarp': 1,
+      \})
+
+" }}}
+
+" FZF ---------------------- {{{
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
+" }}}
+
+" Gutentags {{{
 let g:gutentags_add_default_project_roots = 0
 let g:gutentags_project_root = ['package.json', '.git']
 let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
@@ -239,7 +272,6 @@ let g:gutentags_ctags_extra_args = [
       \ ]
 
 let g:gutentags_ctags_exclude = [
-      \ 'src/lib', 'src/static',
       \ '*.git', '*.svg', '*.hg',
       \ '*/tests/*',
       \ 'build',
@@ -286,61 +318,111 @@ let g:gutentags_ctags_exclude = [
       \ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
       \ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
       \ ]
+" }}}
 
+" ALE {{{
+" pylsp is the language server. pylsp was installed using the following
+" command: pipx install 'python-lsp-server[rope, pyflakes]'
+" rope provides the completions and renaming
+" pyflakes detects various errors
+let g:ale_linters = {
+            \    'python': ['pylsp'],
+            \    'typescript': ['eslint', 'tsserver'],
+            \    'typescriptreact': ['eslint', 'tsserver'],
+            \    'javascript': ['eslint', 'tsserver'],
+            \    'javascriptreact': ['eslint', 'tsserver'],
+            \}
+
+let g:ale_fixers = {
+            \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'javascriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \}
+" Auto completion has been taken over by deoplete.
+" let g:ale_completion_enabled = 1
+" let g:ale_completion_delay = 100
+" let g:ale_completion_autoimport = 1
+let g:ale_fix_on_save = 1
+let g:ale_lint_delay = 100
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_save = 1
+" Only run linters named in ale_linters settings.
+let g:ale_linters_explicit = 1
+let g:ale_lint_on_text_changed = 0
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
+let g:ale_open_list = 1
+let g:ale_list_window_size = 3
+let g:ale_python_auto_pipenv = 1
+let g:ale_python_auto_poetry = 1
+let g:ale_python_black_auto_pipenv = 1
+let g:ale_python_black_auto_poetry = 1
+
+" Have clicking tab and shift-tab cycle through autocomplete suggestions
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
+
+" Temporarily turning this off because I'm not that it's effective
+" augroup clear_jumps
+"   autocmd!
+"   autocmd VimEnter * :clearjumps
+" augroup END
+
+" }}}
+
+" Startify {{{
+" Don't let startify change the directory
+let g:startify_change_to_dir = 0
+" }}}
+
+" Vimwiki {{{
 " Only files in the wiki directory should have a vimwiki filetype
 let g:vimwiki_global_ext = 0
 let g:vimwiki_option_syntax = 'markdown'
 let g:vimwiki_list = [
-    \ {'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md', 'links_space_char': '-'},
+    \ {'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md',
+    \ 'links_space_char': '-', 'html_filename_parameterization': 1,
+    \ 'custom_wiki2html': 'vimwiki_markdown', 'template_path': '~/vimwiki/templates/',
+    \ 'template_default': 'default', 'template_ext': '.tpl'},
     \ ]
+" }}}
 
-" Automatically close quickfix/loclist when main buffer is closed
-autocmd WinEnter * if &buftype ==# 'quickfix' && winnr('$') == 1 | quit | endif
+" {{{ Rhubarb
+" Configure rhubarb-vim to look at Granular's gitlab domain
+let g:github_enterprise_urls = ['https://gitlab.internal.granular.ag']
+" }}}
 
-" Automatically enable spell check on markdown and git commit files
-autocmd FileType markdown setlocal spell
-autocmd FileType gitcommit setlocal spell
-autocmd FileType markdown setlocal complete+=kspell
-autocmd FileType gitcommit setlocal complete+=kspell
 
-nmap <Space>r :call feedkeys(":Rename " . expand('%@'))<CR>
+" }}}
 
-function StripTrailingWhitespace ()
-    " don't strip on these filetypes
-    if &ft =~ 'markdown'
-        return
-    endif
-    %s/\s\+$//e
+" Custom functions ---------------------- {{{
+
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
 endfunction
 
-autocmd BufWritePre * call StripTrailingWhitespace()
+let g:search_replace_pre_execution_options = {"g:ale_fix_on_save": 0}
 
-" Transparent editing of gpg encrypted files.
-" By Wouter Hanegraaff
-augroup encrypted
-  au!
+function! ApplyPreExecutionSettings()
+  let l:current_settings = {}
+  for [key, value] in items(g:search_replace_pre_execution_options)
+    execute "echom " . key
+    silent execute "let l:current_settings[\"" . key . "\"] = " . key
+    silent execute "let " . key . "=" . value
+  endfor
+  echom l:current_settings
+  return l:current_settings
+endfunction
 
-  " First make sure nothing is written to ~/.viminfo while editing
-  " an encrypted file.
-  autocmd BufReadPre,FileReadPre *.gpg set viminfo=
-  " We don't want a various options which write unencrypted data to disk
-  autocmd BufReadPre,FileReadPre *.gpg set noswapfile noundofile nobackup
-
-  " Switch to binary mode to read the encrypted file
-  autocmd BufReadPre,FileReadPre *.gpg set bin
-  autocmd BufReadPre,FileReadPre *.gpg let ch_save = &ch|set ch=2
-  " (If you use tcsh, you may need to alter this line.)
-  autocmd BufReadPost,FileReadPost *.gpg '[,']!gpg --decrypt 2> /dev/null
-
-  " Switch to normal mode for editing
-  autocmd BufReadPost,FileReadPost *.gpg set nobin
-  autocmd BufReadPost,FileReadPost *.gpg let &ch = ch_save|unlet ch_save
-  autocmd BufReadPost,FileReadPost *.gpg execute ":doautocmd BufReadPost " . expand("%:r")
-
-  " Convert all text to encrypted text before writing
-  " (If you use tcsh, you may need to alter this line.)
-  autocmd BufWritePre,FileWritePre *.gpg '[,']!gpg --default-recipient-self -ae 2>/dev/null
-  " Undo the encryption so we are back in the normal text, directly
-  " after the file has been written.
-  autocmd BufWritePost,FileWritePost *.gpg u
-augroup END
+" }}}
+"
+" This was when I wrote my own omnifunc for gitlab ci completions. Deoplete
+" takes care of this now.
+" set omnifunc=MyOmniCompletionFunc
+let g:terraform_fmt_on_save = 1

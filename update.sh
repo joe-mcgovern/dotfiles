@@ -7,11 +7,14 @@ cp ~/.bashrc .
 cp ~/.gitconfig .
 cp ~/.tmux.conf .
 cp ~/.config/starship.toml .
+cp ~/Library/Application\ Support/lazygit/config.yml lazygit_config.yaml
 sed -i "" 's/name = .*/name = First Last/' .gitconfig
 sed -i "" 's/email = .*/email = youremail@email.com/' .gitconfig
-ls ~/.vim/bundle > vim_plugins.txt
+export SAFE_HOME=$(echo $HOME | sed 's/\//\\\//g')
+find ~/.vim/pack -name '.git' | sed "s/${SAFE_HOME}\//~\//" >> vim_plugins.txt
 find ~/.vim/pack -name '.git' >> vim_plugins.txt
-ls ~/.tmux/plugins/ > tmux_plugins.txt
+mkdir -p my_vim_plugins
+cp -R ~/.vim/plugins my_vim_plugins
 echo "Files copied"
 echo "Pushing to git..."
 git add . > /dev/null

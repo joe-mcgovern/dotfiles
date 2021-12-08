@@ -1,0 +1,15 @@
+services:
+  gitlab.internal.granular.ag: gitlab:gitlab.internal.granular.ag
+
+os:
+  editCommand: vim
+  openCommand: vim
+
+quitOnTopLevelReturn: true
+
+keybinding:
+  universal:
+    # Use escape to quit the entire program
+    quit: '<esc>'
+    # Use q to return to previous menu, will quit if there's nowhere to return
+    return: 'q'
