@@ -1,0 +1,20 @@
+{
+  "diagnostic.displayByAle": true,
+  "python.formatting.provider": "black",
+  "python.formatting.blackArgs": ["--diff", "--quiet", "--fast"],
+  "python.venvPath": "/Users/joemcgovern/.envs",
+  "pyright.organizeimports.provider": "isort",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportOptionalSubscript": "warning"
+  },
+  "sh.highlightParsingErrors": true,
+  "coc.preferences.formatOnSaveFiletypes": ["typescriptreact", "typescript", "javascript", "python"],
+  "languageserver": {
+    "terraform": {
+      "command": "terraform-ls",
+      "args": ["serve"],
+      "filetypes": ["terraform", "tf"],
+      "initializationOptions": {}
+    }
+  }
+}
