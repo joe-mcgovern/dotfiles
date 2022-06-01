@@ -12,7 +12,19 @@ export PATH="$HOME/.local/bin:$PATH"
 # python packages
 export PYTHONPATH="$HOME/.local/lib/python3.9/site-packages:$PYTHONPATH"
 export PYTHONPATH="$HOME/.local/lib/python3.10/site-packages:$PYTHONPATH"
+# Add globally installed npm binaries to path
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
+# Add go binaries to path
+export PATH="/usr/local/go/bin:$PATH"
+export PATH="$HOME/go/bin:$PATH"
+
+# Add more python scripts to path
+export PATH="/usr/local/opt/python@3.10/bin:$PATH"
+export PATH="/Users/joemcgovern/Library/Python/3.10/bin:$PATH"
+
+# Support pipx binaries
+export PATH="$PATH:/Users/joemcgovern/.local/bin"
 
 # ----- Plugins ---------------------------------------------------------------
 plugins=(
@@ -29,9 +41,8 @@ source $ZSH/oh-my-zsh.sh
 
 # ----- Enviroment variable configuration -------------------------------------
 
-
 # When virtualenvwrapper will store virtual environment configurations
-export WORKON_HOME=~/.envs
+export WORKON_HOME="$HOME/.envs"
 export VIRTUALENVWRAPPER_PYTHON="$HOME/.pyenv/shims/python"
 
 # This speeds up pasting w/ autosuggest
@@ -68,7 +79,6 @@ source /usr/local/bin/fzf-git-functions.sh
 alias gc='git commit -m'
 alias gb='git checkout $(_gb)'
 alias gs='_gf'
-# alias gs='gs_file=$(_gf) && [ -n "$gs_file" ] && vim $gs_file'
 alias ga='git add'
 alias gl='git show $(_gh)'
 alias gn='git new'
@@ -78,11 +88,10 @@ alias lg="lazygit"
 alias ls="exa --no-user --long --no-permissions --icons --header --no-time"
 alias tf='terraform'
 
-
 # SMARTLY open vim! This will open vim using pipenv run vim or poetry run vim
 # if the appropriate files are detected. This allows python Coc plugins to work
 # properly
-alias vim="~/Dev/scripts/smartly-start-vim.sh"
+alias vim="$HOME/scripts/smartly-start-vim.sh"
 
 # ----- Various tool initializations ------------------------------------------
 
@@ -114,20 +123,6 @@ if [ -f '/Users/joemcgovern/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/joe
 if [ -f '/Users/joemcgovern/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/joemcgovern/google-cloud-sdk/completion.zsh.inc'; fi
 
 [ -f ~/fzf.zsh ] && source ~/fzf.zsh
-
-# Add globally installed npm binaries to path
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-# Add go binaries to path
-export PATH="/usr/local/go/bin:$PATH"
-export PATH="$HOME/go/bin:$PATH"
-
-# Add more python scripts to path
-export PATH="/usr/local/opt/python@3.10/bin:$PATH"
-export PATH="/Users/joemcgovern/Library/Python/3.10/bin:$PATH"
-
-# Support pipx binaries
-export PATH="$PATH:/Users/joemcgovern/.local/bin"
 
 # Local initializations that shouldn't be pushed to an open-source repository!
 [ -f ~/local.zsh ] && source ~/local.zsh
