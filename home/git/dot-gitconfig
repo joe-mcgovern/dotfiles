@@ -40,10 +40,8 @@
 	clean = git-lfs clean -- %f
 [core]
 	editor = vim
-	excludesfile = /Users/joemcgovern/.gitignore
-	pager = ~/Dev/scripts/diff-it.sh
-	# pager = diff-so-fancy | { read -d '' stdin; echo $stdin | grep -qE "(modified|added|deleted|commit): " && less --tabs=4 --pattern '^(modified|added|deleted|commit):' -QRXFS $stdin || less --tabs=4 -QRXFS; }
-	# pager = diff-so-fancy | less --tabs=4 -QRXFS
+	excludesfile = ~/.gitignore
+	pager = ~/scripts/diff-it.sh
 [commit]
     template = /Users/joemcgovern/.gitmessage
 [color]
