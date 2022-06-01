@@ -30,7 +30,7 @@
 [user]
 	name = Joe McGovern
 	email = joemcgovern@granular.ag
-	signingkey = 4292EA76FB47B590
+	signingKey = 4292EA76FB47B590
 [push]
 	default = matching
 [filter "lfs"]
@@ -43,7 +43,8 @@
 	excludesfile = ~/.gitignore
 	pager = ~/scripts/diff-it.sh
 [commit]
-    template = /Users/joemcgovern/.gitmessage
+	template = /Users/joemcgovern/.gitmessage
+	gpgsign = true
 [color]
 	ui = true
 [color "diff-highlight"]
