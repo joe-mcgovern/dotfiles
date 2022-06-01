@@ -128,3 +128,6 @@ export PATH="/Users/joemcgovern/Library/Python/3.10/bin:$PATH"
 
 # Support pipx binaries
 export PATH="$PATH:/Users/joemcgovern/.local/bin"
+
+# Local initializations that shouldn't be pushed to an open-source repository!
+[ -f ~/local.zsh ] && source ~/local.zsh
