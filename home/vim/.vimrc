@@ -162,15 +162,19 @@ nnoremap <Leader>gc :Git commit<CR>
 nnoremap <Leader>gp :Git push<CR>
 nnoremap <Leader>gfp :Git fp<CR>
 
+cabbr Rename GRename
+
 " Use <C-X><C-J> when on a word to wrap it in a tag and add a closing tag to
 " it
 inoremap <silent> <buffer> <C-X><C-J> <Esc>ciW<Lt><C-R>"<C-R>=<CR>></<C-R>"><Esc>F<i
 
-nnoremap <Leader>nc :/<<<<<<< HEAD<CR>
-
 " Use :RG <regex> to invoke ripgrep with the provided regex and have fzf
 " render the results.
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+" Bindings for copying current filename onto clipboard
+nnoremap <Leader>yp :let @+ = expand('%')<CR>
+nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
 
 " }}}
 
@@ -551,10 +555,6 @@ function! ApplyPreExecutionSettings()
 endfunction
 
 " }}}
-"
-" This was when I wrote my own omnifunc for gitlab ci completions. Deoplete
-" takes care of this now.
-" set omnifunc=MyOmniCompletionFunc
 
 "" Use emoji-fzf and fzf to fuzzy-search for emoji, and insert the result
 function! InsertEmoji(emoji)

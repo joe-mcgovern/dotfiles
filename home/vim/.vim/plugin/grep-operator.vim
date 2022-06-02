@@ -1,3 +1,7 @@
+" Use <leader>g as an operator to grep for the text object you are operating
+" on. For example run `<leader>giw` to grep for the 'inner word' under cursor.
+" This also works for visually selected text, just run `<leader>g`
+
 nnoremap <leader>g :set operatorfunc=<SID>GrepOperator<cr>g@
 vnoremap <leader>g :<C-u>call <SID>GrepOperator(visualmode())<cr>
 

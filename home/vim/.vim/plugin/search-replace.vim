@@ -2,6 +2,8 @@
 " This plugin currently depends on vim-qfedit (https://github.com/itchyny/vim-qfedit)
 " to allow editing/closing the loclist
 " It would be better to design this plugin so that it has no dependencies.
+" Update: this may be fixed by using COC to manage find/replace across a
+" project.
 
 nnoremap <leader>R :call SearchAndReplace()<CR>
 
