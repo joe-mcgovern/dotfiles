@@ -2,6 +2,8 @@
 	co = checkout
 	cim = commit -m
 	new = checkout -b
+	# cm - checkout main/master
+	cm = !git checkout $(git default-branch)
 	save = commit --amend --no-edit
 	# pom - "pull origin master"
 	pom = !git pull origin $(git default-branch)
