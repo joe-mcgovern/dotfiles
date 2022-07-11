@@ -7,12 +7,13 @@
 " virtualenvs, which every project I work on uses. I also wasn't able to find
 " an easy way to enable isort and black.
 "
-let g:terraform_fmt_on_save = 1
-
 " Basic settings ---------------------- {{{
 
 " Configure python to be python3
 set pyxversion=3
+
+" Don't give the 'ATTENTION' message when an existing swap file is found
+set shortmess+=A
 
 " Use spaces instead of tabs
 set expandtab
@@ -72,6 +73,20 @@ augroup strip_whitespace
   autocmd BufWritePre * call StripTrailingWhitespace()
 augroup END
 
+" Configure file explorer
+let g:netrw_banner = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 10
+
+" save undo trees in files
+set undofile
+set undodir=~/.vim/undo
+
+" number of undo saved
+set undolevels=10000
+
 " function Autosave ()
 "   if &ft =~ "startify"
 "     return
@@ -125,11 +140,7 @@ nnoremap rv :source $MYVIMRC<CR>
 " Override vim's default 'jump to tag' command with ALE's. I did this because
 " ALE's seemed to do a better job of jumping to the actual defintion (as
 " opposed to jumping to the nearest import or something).
-" nnoremap <C-]> :keepjumps ALEGoToDefinition<CR>
-" Temporarily disabling while testing COC
-" nnoremap <C-]> :ALEGoToDefinition<CR>
-" Use <Leader>J to jump to the definition of the word under the cursor.
-nnoremap <Leader>J :ALEGoToDefinition<CR>
+nnoremap <C-]> :keepjumps ALEGoToDefinition<CR>
 
 " Use <Leader>I to attempt to import the word under cursor
 nnoremap <Leader>I :ALEImport<CR>
@@ -138,7 +149,7 @@ nnoremap <Leader>I :ALEImport<CR>
 nnoremap <Leader>b :Buffers<CR>
 
 " Explore the file tree
-nnoremap <Leader>e :NERDTreeToggle<CR>
+nnoremap <Leader>e :Lexplore<CR>
 
 " Start fzf using fz
 nnoremap fz :Files<CR>
@@ -181,66 +192,66 @@ nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
 " COC ---------------------- {{{
 " Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
 " delays and poor user experience.
-set updatetime=300
-
-" Some servers have issues with backup files, see #649.
-set nobackup
-set nowritebackup
-
-set hidden
-
-nmap <leader>rn <Plug>(coc-rename)
-nnoremap <leader>qf  <Plug>(coc-fix-current)
+" set updatetime=300
+"
+" " Some servers have issues with backup files, see #649.
+" set nobackup
+" set nowritebackup
+"
+" set hidden
+"
+" nmap <leader>rn <Plug>(coc-rename)
+" nnoremap <leader>qf  <Plug>(coc-fix-current)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+" nmap <silent> gd <Plug>(coc-definition)
+" nmap <silent> gy <Plug>(coc-type-definition)
+" nmap <silent> gi <Plug>(coc-implementation)
+" nmap <silent> gr <Plug>(coc-references)
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
-nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
-
-nmap <silent> <C-]> <Plug>(coc-definition)
-
-" Show all diagnostics
-nnoremap <Leader>E :CocDiagnostics<CR>
-
-augroup coc_filetype_javascript
-  autocmd!
-  " Use ,F to fix the problem under cursor
-  autocmd FileType typescriptreact,typescript,javascript nnoremap <silent><leader>F :call CocAction('runCommand', 'tsserver.executeAutofix')<CR>
-augroup END
-
-augroup coc_filetype_python
-  autocmd!
-  " Format on save
-  " autocmd BufWritePre *.py :call CocAction("format")
-  autocmd BufWritePre *.py :call CocAction("runCommand", "python.sortImports")
-  autocmd FileType typescriptreact,typescript,javascript nnoremap <silent><leader>F :call CocAction('runCommand', 'pyright.executeAutofix')<CR>
-augroup END
-
-augroup coc_filetype_markdown
-  autocmd!
-  autocmd FileType markdown let b:coc_suggest_disable = 1
-augroup END
-
-" Change error message color to white
-highlight CocErrorHighlight ctermfg=White guifg=#ffffff
-highlight CocErrorVirtualText ctermfg=White guifg=#ffffff
-highlight CocErrorFloat ctermfg=White guifg=#ffffff
-highlight CocErrorSign ctermfg=White guifg=#ffffff
-
-" Always show the signcolumn, otherwise it would shift the text each time
-" diagnostics appear/become resolved.
-if has("nvim-0.5.0") || has("patch-8.1.1564")
-  " Recently vim can merge signcolumn and number column into one
-  set signcolumn=number
-else
-  set signcolumn=yes
-endif
+" nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
+" nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
+"
+" nmap <silent> <C-]> <Plug>(coc-definition)
+"
+" " Show all diagnostics
+" nnoremap <Leader>E :CocDiagnostics<CR>
+"
+" augroup coc_filetype_javascript
+"   autocmd!
+"   " Use ,F to fix the problem under cursor
+"   autocmd FileType typescriptreact,typescript,javascript nnoremap <silent><leader>F :call CocAction('runCommand', 'tsserver.executeAutofix')<CR>
+" augroup END
+"
+" augroup coc_filetype_python
+"   autocmd!
+"   " Format on save
+"   " autocmd BufWritePre *.py :call CocAction("format")
+"   autocmd BufWritePre *.py :call CocAction("runCommand", "python.sortImports")
+"   autocmd FileType typescriptreact,typescript,javascript nnoremap <silent><leader>F :call CocAction('runCommand', 'pyright.executeAutofix')<CR>
+" augroup END
+"
+" augroup coc_filetype_markdown
+"   autocmd!
+"   autocmd FileType markdown let b:coc_suggest_disable = 1
+" augroup END
+"
+" " Change error message color to white
+" highlight CocErrorHighlight ctermfg=White guifg=#ffffff
+" highlight CocErrorVirtualText ctermfg=White guifg=#ffffff
+" highlight CocErrorFloat ctermfg=White guifg=#ffffff
+" highlight CocErrorSign ctermfg=White guifg=#ffffff
+"
+" " Always show the signcolumn, otherwise it would shift the text each time
+" " diagnostics appear/become resolved.
+" if has("nvim-0.5.0") || has("patch-8.1.1564")
+"   " Recently vim can merge signcolumn and number column into one
+"   set signcolumn=number
+" else
+"   set signcolumn=yes
+" endif
 
 " }}}
 
@@ -320,16 +331,26 @@ augroup END
 " Configure status line
 let g:lightline = {
   \     'active': {
-  \         'left': [['mode', 'paste' ], ['cocstatus', 'gitbranch', 'readonly', 'relativepath', 'modified']],
+  \         'left': [['mode', 'paste' ], ['cocstatus', 'gitbranch', 'readonly', 'cwd', 'relativepath', 'modified']],
   \     },
   \     'component_function': {
   \         'gitbranch': 'fugitive#head',
   \         'cocstatus': 'coc#status',
+  \         'cwd': 'LightlineCwd',
   \     },
   \ }
 
-  " Use autocmd to force lightline update.
-  autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
+
+function LightlineCwd()
+  " Remove $HOME from current working directory
+  let l:path_without_home = substitute(getcwd(), $HOME . "/", "", "")
+  " If the directory is nested within some kind of dev directory, remove the
+  " dev directory from the path as well
+  return substitute(l:path_without_home, "^[a-zA-Z]*dev/", "", "i")
+endfunction
+
+" Use autocmd to force lightline update.
+autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 " }}}
 
@@ -341,18 +362,7 @@ let g:lightline = {
 "       \ "g:ale_fix_on_save": 0
 "       \}
 
-" {{{ Deoplete
-
-" TEMPORARILY disabling while I test out coc
-" set runtimepath+=~/.vim/pack/plugins/start/deoplete.nvim
-" let g:deoplete#enable_at_startup = 1
-" call deoplete#custom#option({
-"       \ 'auto_complete_delay': 100,
-"       \ 'max_list': 20,
-"       \ 'yarp': 1,
-"       \})
-
-" }}}
+let g:terraform_fmt_on_save = 1
 
 " FZF ---------------------- {{{
 function! s:build_quickfix_list(lines)
@@ -437,33 +447,25 @@ let g:gutentags_ctags_exclude = [
 " command: pipx install 'python-lsp-server[rope, pyflakes]'
 " rope provides the completions and renaming
 " pyflakes detects various errors
-" let g:ale_linters = {
-"             \    'go': ['gopls'],
-"             \    'python': ['pylsp'],
-"             \    'typescript': ['eslint', 'tsserver'],
-"             \    'typescriptreact': ['eslint', 'tsserver'],
-"             \    'javascript': ['eslint', 'tsserver'],
-"             \    'javascriptreact': ['eslint', 'tsserver'],
-"             \    'terraform': ['terraform'],
-"             \}
-" let g:ale_linters = {
-"             \    'python': ['pylsp'],
-"             \}
-let g:ale_linters = {}
+let g:ale_linters = {
+            \    'go': ['gopls'],
+            \    'python': ['pylsp'],
+            \    'typescript': ['eslint', 'tsserver'],
+            \    'typescriptreact': ['eslint', 'tsserver'],
+            \    'javascript': ['eslint', 'tsserver'],
+            \    'javascriptreact': ['eslint', 'tsserver'],
+            \    'terraform': ['terraform'],
+            \}
 
-" let g:ale_fixers = {
-"             \    'go': ['goimports', 'remove_trailing_lines', 'trim_whitespace'],
-"             \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
-"             \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
-"             \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
-"             \    'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
-"             \    'javascriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
-"             \    'terraform': ['terraform', 'remove_trailing_lines', 'trim_whitespace'],
-"             \}
-" let g:ale_fixers = {
-"             \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
-"             \}
-let g:ale_fixers = {}
+let g:ale_fixers = {
+            \    'go': ['goimports', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'javascriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'terraform': ['terraform', 'remove_trailing_lines', 'trim_whitespace'],
+            \}
 let g:ale_fix_on_save = 1
 let g:ale_lint_delay = 100
 let g:ale_lint_on_enter = 1
@@ -475,12 +477,13 @@ let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
 let g:ale_list_window_size = 3
-" let g:ale_python_auto_pipenv = 1
-" let g:ale_python_auto_poetry = 1
-" let g:ale_python_black_auto_pipenv = 1
-" let g:ale_python_black_auto_poetry = 1
-" let g:ale_python_isort_auto_pipenv = 1
-" let g:ale_python_isort_auto_poetry = 1
+let g:ale_python_auto_pipenv = 1
+let g:ale_python_auto_poetry = 1
+let g:ale_python_black_auto_pipenv = 1
+let g:ale_python_black_auto_poetry = 1
+let g:ale_python_isort_auto_pipenv = 1
+let g:ale_python_isort_auto_poetry = 1
+let g:ale_completion_enabled = 1
 
 " augroup ale_filetype_python
 "   autocmd!
@@ -495,8 +498,8 @@ inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
 " This is for COC
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+"                               \: '\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>'
 
 " Temporarily turning this off because I'm not that it's effective
 " augroup clear_jumps
@@ -530,45 +533,3 @@ let g:github_enterprise_urls = ['https://gitlab.internal.granular.ag']
 
 
 " }}}
-
-" Custom functions ---------------------- {{{
-
-function! RipgrepFzf(query, fullscreen)
-  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
-  let initial_command = printf(command_fmt, shellescape(a:query))
-  let reload_command = printf(command_fmt, '{q}')
-  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
-  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-endfunction
-
-let g:search_replace_pre_execution_options = {"g:ale_fix_on_save": 0}
-
-function! ApplyPreExecutionSettings()
-  let l:current_settings = {}
-  for [key, value] in items(g:search_replace_pre_execution_options)
-    execute "echom " . key
-    silent execute "let l:current_settings[\"" . key . "\"] = " . key
-    silent execute "let " . key . "=" . value
-  endfor
-  echom l:current_settings
-  return l:current_settings
-endfunction
-
-" }}}
-
-"" Use emoji-fzf and fzf to fuzzy-search for emoji, and insert the result
-function! InsertEmoji(emoji)
-    let @a = system('cut -d " " -f 1 | emoji-fzf get', a:emoji)
-    normal! "agP
-endfunction
-
-command! -bang Emoj
-  \ call fzf#run({
-      \ 'source': 'emoji-fzf preview',
-      \ 'options': '--preview ''emoji-fzf get --name {1}''',
-      \ 'sink': function('InsertEmoji')
-      \ })
-" Ctrl-e in normal and insert mode will open the emoji picker.
-" Unfortunately doesn't bring you back to insert mode 😕
-map <C-e> :Emoj<CR>
-imap <C-e> <C-o><C-e>
