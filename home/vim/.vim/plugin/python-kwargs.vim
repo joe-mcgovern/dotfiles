@@ -11,6 +11,7 @@ vnoremap <leader>td :<c-u>call ToggleKwargsOrDict(visualmode())<cr>
 let g:python_kwargs_loaded = 1
 
 function! ToggleKwargsOrDict(mode_type)
+    let l:reg = @@
     if a:mode_type ==# 'v'
         execute "normal! `<v`>y"
     elseif a:mode_type ==# 'V'
@@ -35,6 +36,7 @@ function! ToggleKwargsOrDict(mode_type)
             endif
         endfor
     endfor
+    let @@ = l:reg
 endfunction
 
 function s:IsKwarg(line)
