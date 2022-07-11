@@ -8,23 +8,12 @@ export PATH="$HOME/.poetry/bin:$PATH"
 # Add pipx (and other things in .local/bin) to path
 export PATH="$HOME/.local/bin:$PATH"
 
-# Add python3.9 site packages to pythonpath so vim can find globally installed
-# python packages
-export PYTHONPATH="$HOME/.local/lib/python3.9/site-packages:$PYTHONPATH"
-export PYTHONPATH="$HOME/.local/lib/python3.10/site-packages:$PYTHONPATH"
 # Add globally installed npm binaries to path
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # Add go binaries to path
 export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
-
-# Add more python scripts to path
-export PATH="/usr/local/opt/python@3.10/bin:$PATH"
-export PATH="/Users/joemcgovern/Library/Python/3.10/bin:$PATH"
-
-# Support pipx binaries
-export PATH="$PATH:/Users/joemcgovern/.local/bin"
 
 # ----- Plugins ---------------------------------------------------------------
 plugins=(
