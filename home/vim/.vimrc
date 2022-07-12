@@ -78,7 +78,7 @@ let g:netrw_banner = 0
 let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
-let g:netrw_winsize = 10
+let g:netrw_winsize = 15
 
 " save undo trees in files
 set undofile
@@ -186,72 +186,6 @@ command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 " Bindings for copying current filename onto clipboard
 nnoremap <Leader>yp :let @+ = expand('%')<CR>
 nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
-
-" }}}
-
-" COC ---------------------- {{{
-" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
-" delays and poor user experience.
-" set updatetime=300
-"
-" " Some servers have issues with backup files, see #649.
-" set nobackup
-" set nowritebackup
-"
-" set hidden
-"
-" nmap <leader>rn <Plug>(coc-rename)
-" nnoremap <leader>qf  <Plug>(coc-fix-current)
-
-" GoTo code navigation.
-" nmap <silent> gd <Plug>(coc-definition)
-" nmap <silent> gy <Plug>(coc-type-definition)
-" nmap <silent> gi <Plug>(coc-implementation)
-" nmap <silent> gr <Plug>(coc-references)
-
-" Use `[g` and `]g` to navigate diagnostics
-" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-" nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
-" nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
-"
-" nmap <silent> <C-]> <Plug>(coc-definition)
-"
-" " Show all diagnostics
-" nnoremap <Leader>E :CocDiagnostics<CR>
-"
-" augroup coc_filetype_javascript
-"   autocmd!
-"   " Use ,F to fix the problem under cursor
-"   autocmd FileType typescriptreact,typescript,javascript nnoremap <silent><leader>F :call CocAction('runCommand', 'tsserver.executeAutofix')<CR>
-" augroup END
-"
-" augroup coc_filetype_python
-"   autocmd!
-"   " Format on save
-"   " autocmd BufWritePre *.py :call CocAction("format")
-"   autocmd BufWritePre *.py :call CocAction("runCommand", "python.sortImports")
-"   autocmd FileType typescriptreact,typescript,javascript nnoremap <silent><leader>F :call CocAction('runCommand', 'pyright.executeAutofix')<CR>
-" augroup END
-"
-" augroup coc_filetype_markdown
-"   autocmd!
-"   autocmd FileType markdown let b:coc_suggest_disable = 1
-" augroup END
-"
-" " Change error message color to white
-" highlight CocErrorHighlight ctermfg=White guifg=#ffffff
-" highlight CocErrorVirtualText ctermfg=White guifg=#ffffff
-" highlight CocErrorFloat ctermfg=White guifg=#ffffff
-" highlight CocErrorSign ctermfg=White guifg=#ffffff
-"
-" " Always show the signcolumn, otherwise it would shift the text each time
-" " diagnostics appear/become resolved.
-" if has("nvim-0.5.0") || has("patch-8.1.1564")
-"   " Recently vim can merge signcolumn and number column into one
-"   set signcolumn=number
-" else
-"   set signcolumn=yes
-" endif
 
 " }}}
 
@@ -533,3 +467,45 @@ let g:github_enterprise_urls = ['https://gitlab.internal.granular.ag']
 
 
 " }}}
+
+" Custom functions ---------------------- {{{
+
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+let g:search_replace_pre_execution_options = {"g:ale_fix_on_save": 0}
+
+function! ApplyPreExecutionSettings()
+  let l:current_settings = {}
+  for [key, value] in items(g:search_replace_pre_execution_options)
+    execute "echom " . key
+    silent execute "let l:current_settings[\"" . key . "\"] = " . key
+    silent execute "let " . key . "=" . value
+  endfor
+  echom l:current_settings
+  return l:current_settings
+endfunction
+
+" }}}
+
+"" Use emoji-fzf and fzf to fuzzy-search for emoji, and insert the result
+function! InsertEmoji(emoji)
+    let @a = system('cut -d " " -f 1 | emoji-fzf get', a:emoji)
+    normal! "agP
+endfunction
+
+command! -bang Emoj
+  \ call fzf#run({
+      \ 'source': 'emoji-fzf preview',
+      \ 'options': '--preview ''emoji-fzf get --name {1}''',
+      \ 'sink': function('InsertEmoji')
+      \ })
+" Ctrl-e in normal and insert mode will open the emoji picker.
+" Unfortunately doesn't bring you back to insert mode 😕
+map <C-e> :Emoj<CR>
+imap <C-e> <C-o><C-e>
