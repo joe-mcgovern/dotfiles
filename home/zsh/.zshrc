@@ -77,11 +77,6 @@ alias lg="lazygit"
 alias ls="exa --no-user --long --no-permissions --icons --header --no-time"
 alias tf='terraform'
 
-# SMARTLY open vim! This will open vim using pipenv run vim or poetry run vim
-# if the appropriate files are detected. This allows python Coc plugins to work
-# properly
-alias vim="$HOME/scripts/smartly-start-vim.sh"
-
 # ----- Various tool initializations ------------------------------------------
 
 # Use ripgrep instead of fzf
