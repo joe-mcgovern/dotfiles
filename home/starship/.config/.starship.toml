@@ -8,6 +8,7 @@ $git_state\
 $custom\
 $cmd_duration\
 $line_break\
+$env_var.VI_MODE\
 $shell\
 $character"""
 
@@ -16,3 +17,8 @@ format = '[(\($symbol$virtualenv $version\) )]($style)'
 
 [kubernetes]
 disabled = false
+
+[env_var.VI_MODE]
+disabled = false
+variable = "ZSH_VI_MODE"
+default = "TACO"
