@@ -23,6 +23,7 @@ plugins=(
     pass
     zsh-autosuggestions
     zsh-syntax-highlighting
+    zsh-vi-mode
 )
 
 # Initialize oh-my-zsh
@@ -46,6 +47,9 @@ pastefinish() {
 }
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
+
+# ----- ZVM configuration ----------------------------------------------------
+ZVM_VI_INSERT_ESCAPE_BINDKEY="jk"
 
 # ----- Aliases ---------------------------------------------------------------
 
