@@ -304,14 +304,32 @@ autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 let g:terraform_fmt_on_save = 1
 
 " FZF ---------------------- {{{
+
 function! s:build_quickfix_list(lines)
   call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
   copen
   cc
 endfunction
 
+
+" Insert a markdown link for all selected files
+function! s:insert_link(lines)
+  let l:links = []
+
+  for l:line in a:lines
+    let l:fname_wo_date = substitute(l:line, '[0-9]\+\-', '', '')
+    let l:fname_wo_ext = substitute(l:fname_wo_date, '\..*$', '', '')
+    let l:fname_wo_hyphens = substitute(l:fname_wo_ext, '\-', ' ', 'g')
+    let l:links = add(l:links, "[" . l:fname_wo_hyphens . "](" . l:line . ")")
+  endfor
+  echom l:links
+  " Must declare a variable here so that vim can open without complaining.
+  let l:failed = append(line("."), l:links)
+endfunction
+
 let g:fzf_action = {
   \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-l': function('s:insert_link'),
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-x': 'split',
   \ 'ctrl-v': 'vsplit' }
