@@ -24,6 +24,7 @@ plugins=(
     zsh-autosuggestions
     zsh-syntax-highlighting
     zsh-vi-mode
+    emoji-fzf
 )
 
 # Initialize oh-my-zsh
@@ -48,7 +49,12 @@ pastefinish() {
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
 
-# ----- ZVM configuration ----------------------------------------------------
+
+# ----- emoji-fzf configuration -----------------------------------------------
+EMOJI_FZF_BIN_PATH="/Users/joemcgovern/.local/bin/emoji-fzf"
+EMOJI_FZF_BINDKEY="^e"
+EMOJI_FZF_FUZZY_FINDER="fzf"
+
 ZVM_VI_INSERT_ESCAPE_BINDKEY="jk"
 
 # ----- Aliases ---------------------------------------------------------------
