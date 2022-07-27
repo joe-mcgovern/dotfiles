@@ -142,6 +142,11 @@ nnoremap rv :source $MYVIMRC<CR>
 " opposed to jumping to the nearest import or something).
 nnoremap <C-]> :keepjumps ALEGoToDefinition<CR>
 
+augroup help_jump
+  autocmd!
+  autocmd FileType help nnoremap <C-]> :silent execute "tag " . substitute(expand("<cWORD>"), "\|", "", "g")<CR>zz
+augroup END
+
 " Use <Leader>I to attempt to import the word under cursor
 nnoremap <Leader>I :ALEImport<CR>
 
