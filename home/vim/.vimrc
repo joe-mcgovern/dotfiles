@@ -532,3 +532,21 @@ command! -bang Emoj
 " Unfortunately doesn't bring you back to insert mode 😕
 map <C-e> :Emoj<CR>
 imap <C-e> <C-o><C-e>
+
+" Custom zettel plugin --- {{{
+
+let g:zettelkasten = "~/zettel/"
+
+def ZettelNew(name: string)
+  const clean_name = join(split(name, " "), "-")
+  const fname = g:zettelkasten .. strftime("%Y%m%d%H%M") .. "-" .. clean_name .. ".md"
+  execute ":edit " .. fname
+  const failed = setline(".", "# " .. name)
+enddef
+
+command! -nargs=0 ZettelHome :silent execute "edit " . g:zettelkasten . "index.md"
+command! -nargs=1 ZettelNew :call ZettelNew(<f-args>)
+
+nnoremap <leader>zn :ZettelNew
+nnoremap <leader>zh :ZettelHome<cr>
+" }}}
