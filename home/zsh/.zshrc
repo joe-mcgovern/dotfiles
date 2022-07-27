@@ -55,7 +55,13 @@ EMOJI_FZF_BIN_PATH="/Users/joemcgovern/.local/bin/emoji-fzf"
 EMOJI_FZF_BINDKEY="^e"
 EMOJI_FZF_FUZZY_FINDER="fzf"
 
+# ----- ZVM configuration -----------------------------------------------------
+# Use `jk` to go from insert to normal mode
 ZVM_VI_INSERT_ESCAPE_BINDKEY="jk"
+# Use "nex" readkey engine, which is supposedly better than zle (default)
+ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_NEX
+# Always starting with insert mode for each command line
+ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
 
 # ----- Aliases ---------------------------------------------------------------
 
@@ -120,3 +126,16 @@ if [ -f '/Users/joemcgovern/google-cloud-sdk/completion.zsh.inc' ]; then . '/Use
 
 # Local initializations that shouldn't be pushed to an open-source repository!
 [ -f ~/local.zsh ] && source ~/local.zsh
+
+# Define an init function and append to zvm_after_init_commands
+function my_init() {
+  [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+  [ -f /usr/local/bin/fzf-git-functions.sh ] && source /usr/local/bin/fzf-git-functions.sh
+  autoload -U up-line-or-beginning-search
+  autoload -U down-line-or-beginning-search
+  zle -N up-line-or-beginning-search
+  zle -N down-line-or-beginning-search
+  bindkey "^[[A" up-line-or-beginning-search # Up
+  bindkey "^[[B" down-line-or-beginning-search # Down
+}
+zvm_after_init_commands+=(my_init)
