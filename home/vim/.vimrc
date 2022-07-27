@@ -250,20 +250,20 @@ augroup filetype_markdown
 augroup END
 " }}}
 
-" Replace hashtags with double quotes for vimrc files
-function ReplaceStartingHashtagsWithDoubleQuotes ()
-  %s/^\(\s*\)#/\1"/e
-endfunction
-
 " vim {{{
+"
+" Replace hashtags with double quotes for vimrc files
+" Temporarily disabling this because vim9 functions use hashtag comments
+" function ReplaceStartingHashtagsWithDoubleQuotes ()
+"   %s/^\(\s*\)#/\1"/e
+" endfunction
+
 augroup filetype_vim
   autocmd!
   autocmd FileType vim setlocal foldmethod=marker foldlevelstart=0 shiftwidth=2 tabstop=2
   autocmd Filetype vim iabbrev <buffer> == ==#
-  autocmd BufWritePre *.vimrc call ReplaceStartingHashtagsWithDoubleQuotes()
+  " autocmd BufWritePre *.vimrc call ReplaceStartingHashtagsWithDoubleQuotes()
 augroup END
-" }}}
-
 " }}}
 
 " Status line ---------------------- {{{
