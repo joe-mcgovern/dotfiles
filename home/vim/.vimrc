@@ -12,8 +12,8 @@
 " Configure python to be python3
 set pyxversion=3
 
-" Don't give the 'ATTENTION' message when an existing swap file is found
-set shortmess+=A
+" Show number of matching results in buffer when searching
+set shortmess-=S
 
 " Use spaces instead of tabs
 set expandtab
