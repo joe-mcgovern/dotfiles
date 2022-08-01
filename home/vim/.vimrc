@@ -57,7 +57,7 @@ set hlsearch
 
 " Set syntax theme to monokai. Vim has some built in schemes, but
 " custom ones can be added via the ~/.vim/colors directory
-colorscheme monokai
+colorscheme moonfly
 
 " Strip trailing whitespace on save
 function StripTrailingWhitespace ()
