@@ -55,9 +55,15 @@ set colorcolumn=80
 " Highlight all matches when searching
 set hlsearch
 
-" Set syntax theme to monokai. Vim has some built in schemes, but
+" Set syntax theme to gruvbox. Vim has some built in schemes, but
 " custom ones can be added via the ~/.vim/colors directory
-colorscheme moonfly
+" The lines above the colorscheme declaration are necessary for the specific
+" gruvbox theme to work in vim + tmux
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
+set background=dark
+colorscheme gruvbox
 
 " Strip trailing whitespace on save
 function StripTrailingWhitespace ()

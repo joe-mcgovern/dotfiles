@@ -73,3 +73,6 @@
 [submodule "home/vim/.vim/pack/packages/start/fzf"]
 	path = home/vim/.vim/pack/packages/start/fzf
 	url = https://github.com/junegunn/fzf.git
+[submodule "home/vim/.vim/pack/colors/start/gruvbox"]
+	path = home/vim/.vim/pack/colors/start/gruvbox
+	url = https://github.com/morhetz/gruvbox.git
