@@ -86,6 +86,11 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 15
 
+" Use easier diffing algorithm for vimdiff
+if has("patch-8.1.0360")
+  set diffopt+=internal,algorithm:patience
+endif
+
 " Safe editing ----- {{{
 "
 " Thanks to https://begriffs.com/posts/2019-07-19-history-use-vim.html
@@ -297,6 +302,7 @@ augroup filetype_vim
   " autocmd BufWritePre *.vimrc call ReplaceStartingHashtagsWithDoubleQuotes()
 augroup END
 " }}}
+" }}}
 
 " Status line ---------------------- {{{
 " Configure status line
@@ -334,6 +340,10 @@ autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 "       \}
 
 let g:terraform_fmt_on_save = 1
+
+" Undotree ----------------- {{{
+let g:undotree_SetFocusWhenToggle = 1
+" }}}
 
 " FZF ---------------------- {{{
 
