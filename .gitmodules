@@ -76,3 +76,6 @@
 [submodule "home/vim/.vim/pack/colors/start/gruvbox"]
 	path = home/vim/.vim/pack/colors/start/gruvbox
 	url = https://github.com/morhetz/gruvbox.git
+[submodule "home/vim/.vim/pack/plugins/start/undotree"]
+	path = home/vim/.vim/pack/plugins/start/undotree
+	url = https://github.com/mbbill/undotree.git
