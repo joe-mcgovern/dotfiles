@@ -233,44 +233,6 @@ nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
 
 " Filetype specific mappings ---------------------- {{{
 
-" Function used by abbreviations to eat trailing whitespace
-func Eatchar(pat)
-  let c = nr2char(getchar(0))
-  return (c =~ a:pat) ? '' : c
-endfunc
-
-" python {{{
-augroup filetype_python
-  autocmd!
-  " Use <leader>cfn to copy/paste the current function and drop you into
-  " insert mode to replace the function name.
-  " You can think of this as "copy function"
-  autocmd FileType python nnoremap <buffer> <leader>cfn ?^\s*def <CR>?^$<CR>:nohlsearch<CR>V/^\s*def <CR>n?^$<CR>y/^\s*def <CR>n?^$<CR>dd"0P/^\s*def <CR>:nohlsearch<CR>ffwcw
-  " Use <leader>ctfn to copy/paste the current function and drop you into
-  " insert mode to replace the function name, prefixing the function name with
-  " test_
-  " You can think of this command like "copy test function"
-  autocmd FileType python nnoremap <buffer> <leader>ctfn ?^\s*def <CR>?^$<CR>:nohlsearch<CR>V/^\s*def <CR>n?^$<CR>y/^\s*def <CR>n?^$<CR>dd"0P/^\s*def <CR>:nohlsearch<CR>ffwwi_
-
-  " Use <leader>dfn to delete the current function.
-  " You can think of this command like "delete function"
-  autocmd FileType python nnoremap <buffer> <leader>dfn ?^\s*def <CR>?^$<CR>:nohlsearch<CR>V/^\s*def <CR>n?^$<CR>:nohlsearch<CR>kd
-  autocmd FileType python onoremap <buffer> fn :<c-u>execute "normal! ?^\s*def \r?^$\r:nohlsearch\rV/^\s*def \rn?^$\r"<CR>:nohlsearch<CR>
-augroup END
-" }}}
-
-" javascript {{{
-augroup filetype_javascript
-  autocmd!
-  " Use fp in insert mode to add a new print
-  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> clg console.log()<left><C-R>=Eatchar('\s')<CR>
-  " Use iff in insert mode to add a new if statement
-  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> iff if()<left><C-R>=Eatchar('\s')<CR>
-  " Use rn to add a return statement
-  autocmd FileType typescriptreact,typescript,javascript iabbrev  <buffer> rn return
-augroup END
-" }}}
-
 " gitcommit {{{
 augroup filetype_gitcommit
   autocmd!
