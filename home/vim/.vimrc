@@ -86,12 +86,35 @@ let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 15
 
+" Safe editing ----- {{{
+"
+" Thanks to https://begriffs.com/posts/2019-07-19-history-use-vim.html
+" Protect changes between writes. Default values of
+" updatecount (200 keystrokes) and updatetime
+" (4 seconds) are fine
+set swapfile
+set directory^=~/.vim/swap//
+
+" protect against crash-during-write
+set writebackup
+" but do not persist backup after successful write
+set nobackup
+" use rename-and-write-new method whenever safe
+set backupcopy=auto
+if has("patch-8.1.0251")
+	" consolidate the writebackups -- not a big
+	" deal either way, since they usually get deleted
+	set backupdir^=~/.vim/backup//
+end
+
 " save undo trees in files
 set undofile
 set undodir=~/.vim/undo
 
 " number of undo saved
 set undolevels=10000
+
+" }}}
 
 " function Autosave ()
 "   if &ft =~ "startify"
@@ -155,6 +178,9 @@ augroup END
 
 " Use <Leader>I to attempt to import the word under cursor
 nnoremap <Leader>I :ALEImport<CR>
+
+" Use <Leader>u to toggle the undo tree
+nnoremap <Leader>u :UndotreeToggle<CR>
 
 " Open up the list of buffers using fzf
 nnoremap <Leader>b :Buffers<CR>
