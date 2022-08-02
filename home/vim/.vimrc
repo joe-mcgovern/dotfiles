@@ -155,10 +155,6 @@ nnoremap <leader>G :silent execute "RG \\b" . expand("<cword>") . "\\b"<cr>
 " Search and replace word under cursor within current file
 nnoremap <leader>r :%s/<C-r><C-w>/
 
-" Open file under cursor
-" Don't do this - just use gf ("go to file")
-" nnoremap <leader>o gf
-
 " Toggle search highlight
 nnoremap <leader>h :set hlsearch!<CR>
 
@@ -198,15 +194,6 @@ nnoremap fz :Files<CR>
 
 " Use Control-d to delete the current line in insert mode
 inoremap <C-d> <esc>dd$a
-" Use Leader-U to uppercase the current word in normal mode
-nnoremap <Leader>U viwU
-" Use Leader-L to lowercase the current word in normal mode
-nnoremap <Leader>L viwu
-
-" Use <Leader>' to surround current visual selection in single quotes
-vnoremap <leader>' <esc>`<i'<esc>`>lli'<esc>
-" Use <Leader>" to surround current visual selection in double quotes
-vnoremap <leader>" <esc>`<i"<esc>`>lli"<esc>
 
 " GIT BINDINGS
 nnoremap <Leader>ga :Gwrite<CR>
