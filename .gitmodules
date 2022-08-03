@@ -76,3 +76,6 @@
 [submodule "home/vim/.vim/pack/plugins/start/undotree"]
 	path = home/vim/.vim/pack/plugins/start/undotree
 	url = https://github.com/mbbill/undotree.git
+[submodule "home/vim/.vim/pack/plugins/start/YankRing"]
+	path = home/vim/.vim/pack/plugins/start/YankRing
+	url = git@github.com:vim-scripts/YankRing.vim.git
