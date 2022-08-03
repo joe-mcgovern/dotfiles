@@ -149,9 +149,6 @@ nnoremap / :set hlsearch<cr>/\v
 " Grep for word under cursor
 nnoremap <leader>G :silent execute "RG \\b" . expand("<cword>") . "\\b"<cr>
 
-" Find/replace in project using ripgrep
-" This is now automatically defined in the search-and-replace plugin I wrote.
-" nnoremap <leader>R :call SearchAndReplace()<CR>
 " Search and replace word under cursor within current file
 nnoremap <leader>r :%s/<C-r><C-w>/
 
@@ -237,12 +234,6 @@ augroup END
 " }}}
 
 " vim {{{
-"
-" Replace hashtags with double quotes for vimrc files
-" Temporarily disabling this because vim9 functions use hashtag comments
-" function ReplaceStartingHashtagsWithDoubleQuotes ()
-"   %s/^\(\s*\)#/\1"/e
-" endfunction
 
 augroup filetype_vim
   autocmd!
@@ -274,9 +265,6 @@ function LightlineCwd()
   " dev directory from the path as well
   return substitute(l:path_without_home, "^[a-zA-Z]*dev/", "", "i")
 endfunction
-
-" Use autocmd to force lightline update.
-autocmd User CocStatusChange,CocDiagnosticChange call lightline#update()
 
 " }}}
 
@@ -433,45 +421,15 @@ let g:ale_python_isort_auto_pipenv = 1
 let g:ale_python_isort_auto_poetry = 1
 let g:ale_completion_enabled = 1
 
-" augroup ale_filetype_python
-"   autocmd!
-"   " Use ,F to fix the problem under cursor
-"   "
-"   autocmd Filetype python nnoremap <silent> <C-]> :ALEGoToDefinition<CR>
-" augroup END
-
 " Have clicking tab and shift-tab cycle through autocomplete suggestions
 inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
-" This is for COC
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-" inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-"                               \: '\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>'
-
-" Temporarily turning this off because I'm not that it's effective
-" augroup clear_jumps
-"   autocmd!
-"   autocmd VimEnter * :clearjumps
-" augroup END
 
 " }}}
 
 " Startify {{{
 " Don't let startify change the directory
 let g:startify_change_to_dir = 0
-" }}}
-
-" Vimwiki {{{
-" Only files in the wiki directory should have a vimwiki filetype
-let g:vimwiki_global_ext = 0
-let g:vimwiki_option_syntax = 'markdown'
-let g:vimwiki_list = [
-    \ {'path': '~/vimwiki/', 'syntax': 'markdown', 'ext': '.md',
-    \ 'links_space_char': '-', 'html_filename_parameterization': 1,
-    \ 'custom_wiki2html': 'vimwiki_markdown', 'template_path': '~/vimwiki/templates/',
-    \ 'template_default': 'default', 'template_ext': '.tpl'},
-    \ ]
 " }}}
 
 " {{{ Rhubarb
@@ -509,19 +467,6 @@ function! RipgrepFzf(query, fullscreen)
   let reload_command = printf(command_fmt, '{q}')
   let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
   call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
-endfunction
-
-let g:search_replace_pre_execution_options = {"g:ale_fix_on_save": 0}
-
-function! ApplyPreExecutionSettings()
-  let l:current_settings = {}
-  for [key, value] in items(g:search_replace_pre_execution_options)
-    execute "echom " . key
-    silent execute "let l:current_settings[\"" . key . "\"] = " . key
-    silent execute "let " . key . "=" . value
-  endfor
-  echom l:current_settings
-  return l:current_settings
 endfunction
 
 " }}}
