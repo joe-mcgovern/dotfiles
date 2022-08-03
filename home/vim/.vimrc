@@ -180,6 +180,9 @@ nnoremap <Leader>I :ALEImport<CR>
 " Use <Leader>u to toggle the undo tree
 nnoremap <Leader>u :UndotreeToggle<CR>
 
+" Use <Leader>yr to show yank ring
+nnoremap <Leader>yr :YRShow<CR>
+
 " Open up the list of buffers using fzf
 nnoremap <Leader>b :Buffers<CR>
 
