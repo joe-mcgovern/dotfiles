@@ -22,9 +22,6 @@
 [submodule "home/vim/.vim/pack/plugins/start/vim-startify"]
 	path = home/vim/.vim/pack/plugins/start/vim-startify
 	url = https://github.com/vim-scripts/vim-startify.git
-[submodule "home/vim/.vim/pack/plugins/start/vim-qfedit"]
-	path = home/vim/.vim/pack/plugins/start/vim-qfedit
-	url = https://github.com/itchyny/vim-qfedit.git
 [submodule "home/vim/.vim/pack/plugins/start/vim-lastplace"]
 	path = home/vim/.vim/pack/plugins/start/vim-lastplace
 	url = https://github.com/farmergreg/vim-lastplace.git
