@@ -164,16 +164,6 @@ nnoremap ev :split $MYVIMRC<CR>
 " Reload vimrc using `rv`
 nnoremap rv :source $MYVIMRC<CR>
 
-" Override vim's default 'jump to tag' command with ALE's. I did this because
-" ALE's seemed to do a better job of jumping to the actual defintion (as
-" opposed to jumping to the nearest import or something).
-nnoremap <C-]> :keepjumps ALEGoToDefinition<CR>
-
-augroup help_jump
-  autocmd!
-  autocmd FileType help <buffer> unmap <C-]>
-augroup END
-
 " Use <Leader>I to attempt to import the word under cursor
 nnoremap <Leader>I :ALEImport<CR>
 
@@ -405,6 +395,18 @@ let g:ale_fixers = {
             \    'javascriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
             \    'terraform': ['terraform', 'remove_trailing_lines', 'trim_whitespace'],
             \}
+" For filetypes where I explicitly enable ale, use ALEGoToDefinition instead
+" of the standard 'tag jump' function. ALEGoToDefinition does a better job at
+" jumping to the source (rather than the import at the top of the file).
+" However, vim jumps are desirable for my non-ale files (like vim help files)
+" because ale's jump to definition doesn't work.
+augroup ale_mappings
+  autocmd!
+  for key in keys(g:ale_linters)
+    execute 'autocmd! FileType ' . key . ' nnoremap <buffer> <C-]> :keepjumps ALEGoToDefinition<CR>'
+  endfor
+augroup END
+
 let g:ale_fix_on_save = 1
 let g:ale_lint_delay = 100
 let g:ale_lint_on_enter = 1
