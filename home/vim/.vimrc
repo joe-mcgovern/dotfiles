@@ -171,7 +171,7 @@ nnoremap <C-]> :keepjumps ALEGoToDefinition<CR>
 
 augroup help_jump
   autocmd!
-  autocmd FileType help nnoremap <C-]> :silent execute "tag " . substitute(expand("<cWORD>"), "\|", "", "g")<CR>zz
+  autocmd FileType help <buffer> unmap <C-]>
 augroup END
 
 " Use <Leader>I to attempt to import the word under cursor
