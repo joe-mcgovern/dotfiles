@@ -388,7 +388,7 @@ let g:ale_linters = {
 
 let g:ale_fixers = {
             \    'go': ['goimports', 'remove_trailing_lines', 'trim_whitespace'],
-            \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'python': ['autoflake', 'autoimport', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
             \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
             \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
             \    'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
@@ -418,8 +418,7 @@ let g:ale_set_loclist = 1
 let g:ale_set_quickfix = 0
 let g:ale_open_list = 1
 let g:ale_list_window_size = 3
-let g:ale_python_auto_pipenv = 1
-let g:ale_python_auto_poetry = 1
+let g:ale_python_pylsp_use_global = 1
 let g:ale_python_black_auto_pipenv = 1
 let g:ale_python_black_auto_poetry = 1
 let g:ale_python_isort_auto_pipenv = 1
