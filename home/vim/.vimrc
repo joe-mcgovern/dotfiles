@@ -388,7 +388,7 @@ let g:ale_linters = {
 
 let g:ale_fixers = {
             \    'go': ['goimports', 'remove_trailing_lines', 'trim_whitespace'],
-            \    'python': ['autoflake', 'autoimport', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
             \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
             \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
             \    'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
