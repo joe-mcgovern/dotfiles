@@ -2,3 +2,6 @@ tags
 *.swp
 *.swo
 .yalc
+.rgignore
+.cursorindexignore
+.goplsignore

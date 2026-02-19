@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+DOTFILES_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+HOME_DIR="$DOTFILES_DIR/home"
+
+usage() {
+  cat <<EOF
+Usage: dotfiles <command> [args]
+
+Commands:
+  add <file>...        Track file(s) in the dotfiles repo and symlink them back
+  stow [package]...    Stow specific packages (or all if none given)
+  unstow <package>...  Remove symlinks for package(s)
+  list                 List all packages
+EOF
+  exit 1
+}
+
+# Resolve the package name from a path relative to $HOME.
+# ~/.config/foo/bar -> foo
+# ~/.somerc         -> somerc (strip leading dot)
+resolve_package() {
+  local rel="$1"
+  if [[ "$rel" == .config/* ]]; then
+    echo "${rel}" | cut -d/ -f2
+  else
+    basename "$rel" | sed 's/^\.//'
+  fi
+}
+
+cmd_add() {
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: dotfiles add <file>..." >&2
+    exit 1
+  fi
+
+  for filepath in "$@"; do
+    filepath="$(realpath "$filepath")"
+
+    if [[ ! -e "$filepath" ]]; then
+      echo "error: $filepath does not exist" >&2
+      exit 1
+    fi
+
+    if [[ -L "$filepath" ]]; then
+      echo "error: $filepath is already a symlink" >&2
+      exit 1
+    fi
+
+    # Get path relative to $HOME
+    local rel="${filepath#$HOME/}"
+    if [[ "$rel" == "$filepath" ]]; then
+      echo "error: $filepath is not under \$HOME" >&2
+      exit 1
+    fi
+
+    local pkg
+    pkg="$(resolve_package "$rel")"
+    local pkg_dir="$HOME_DIR/$pkg"
+    local dest="$pkg_dir/$rel"
+
+    mkdir -p "$(dirname "$dest")"
+    mv "$filepath" "$dest"
+
+    # Stow the package to create symlinks
+    (cd "$HOME_DIR" && stow --dotfiles -t "$HOME" "$pkg")
+
+    echo "tracked $rel in package '$pkg'"
+  done
+}
+
+cmd_stow() {
+  local packages=("$@")
+  if [[ ${#packages[@]} -eq 0 ]]; then
+    for dir in "$HOME_DIR"/*/; do
+      packages+=("$(basename "$dir")")
+    done
+  fi
+
+  for pkg in "${packages[@]}"; do
+    if [[ ! -d "$HOME_DIR/$pkg" ]]; then
+      echo "error: package '$pkg' not found" >&2
+      exit 1
+    fi
+    (cd "$HOME_DIR" && stow --dotfiles -t "$HOME" "$pkg")
+    echo "stowed $pkg"
+  done
+}
+
+cmd_unstow() {
+  if [[ $# -eq 0 ]]; then
+    echo "Usage: dotfiles unstow <package>..." >&2
+    exit 1
+  fi
+
+  for pkg in "$@"; do
+    (cd "$HOME_DIR" && stow -D -t "$HOME" "$pkg")
+    echo "unstowed $pkg"
+  done
+}
+
+cmd_list() {
+  for dir in "$HOME_DIR"/*/; do
+    basename "$dir"
+  done
+}
+
+[[ $# -eq 0 ]] && usage
+
+case "$1" in
+  add)    shift; cmd_add "$@" ;;
+  stow)   shift; cmd_stow "$@" ;;
+  unstow) shift; cmd_unstow "$@" ;;
+  list)   shift; cmd_list ;;
+  *)      usage ;;
+esac

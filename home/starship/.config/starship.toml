@@ -1,0 +1,20 @@
+command_timeout = 750
+
+[gcloud]
+disabled = true
+
+[kubernetes]
+disabled = false
+style = "blue bold"
+
+[golang]
+disabled = true
+
+[python]
+disabled = true
+
+[rust]
+disabled = true
+
+[time]
+disabled = false

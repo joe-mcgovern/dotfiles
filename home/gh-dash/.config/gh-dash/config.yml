@@ -1,0 +1,42 @@
+prSections:
+- title: My Pull Requests
+  filters: is:open author:@me org:DataDog
+- title: My Team
+  filters: org:DataDog is:open author:benbushnell author:ngyna  author:casandraGITierrez is:open draft:false
+- title: Involved
+  filters: is:open involves:@me -author:@me
+defaults:
+  preview:
+    open: true
+    width: 50
+  prsLimit: 20
+  issuesLimit: 1
+  view: prs
+  layout:
+    prs:
+      updatedAt:
+        width: 7
+      repo:
+        width: 15
+      author:
+        width: 15
+      assignees:
+        width: 20
+        hidden: true
+      base:
+        width: 15
+        hidden: true
+      lines:
+        width: 16
+  refetchIntervalMinutes: 5
+keybindings:
+  issues: []
+  prs: []
+repoPaths: {}
+theme:
+  ui:
+    table:
+      showSeparator: true
+pager:
+  diff: ""
+confirmQuit: false

@@ -12,7 +12,8 @@
 	# rom - "rebase origin master"
 	rom = !git rebase $(git remote-default-branch)
 	# Clean up local branches that have been merged
-	cleanup = !git fom && git branch --merged | egrep -v \"(^\\*|master|dev|main)\" | xargs git branch -d
+	# cleanup = !git fom && git branch --merged | egrep -v \"(^\\*|master|dev|main)\" | xargs git branch -d
+	cleanup = !bash ~/scripts/cleanup-branches.sh
 	# Short name of current branch
 	branch-current = rev-parse --symbolic-full-name --abbrev-ref HEAD
 	# Name of default branch prefixed with "origin/"
@@ -27,12 +28,13 @@
 	# squash = ! sh -c 'git rebase --interactive HEAD~`git number-of-commits-since-master`'
 	squash = ! sh -c 'git rebase --interactive `git branch-current`~`git number-of-commits-since-master` `git branch-current`'
 	# Force push the current branch
-	fp = !git push origin $(git branch-current) -f
+	fp = !git push origin $(git branch-current) --force-with-lease
 	emend = commit --amend
+	kill-stale = !git status --porcelain | awk '{print $2}' | xargs rm -rf
 [user]
 	name = Joe McGovern
-	email = joemcgovern@granular.ag
-	signingKey = 4292EA76FB47B590
+	email = joe.m.mcgovern@protonmail.com
+	signingKey = 18FAE24E4BA3C2DC
 [push]
 	default = matching
 [filter "lfs"]
@@ -44,8 +46,9 @@
 	editor = vim
 	excludesfile = ~/.gitignore
 	pager = ~/scripts/diff-it.sh
+	hooksPath = /usr/local/dd/global_hooks
+        fsmonitor = true
 [commit]
-	template = /Users/joemcgovern/.gitmessage
 	gpgsign = true
 [color]
 	ui = true
@@ -72,3 +75,10 @@
 [filesystem "Oracle Corporation|11.0.6|/dev/disk1s2"]
 	timestampResolution = 3000 nanoseconds
 	minRacyThreshold = 0 nanoseconds
+[url "ssh://git@github.com/"]
+    insteadOf = https://github.com/
+
+[feature]
+manyFiles = true
+[maintenance]
+	repo = /Users/joe.mcgovern/go/src/github.com/DataDog/dd-source

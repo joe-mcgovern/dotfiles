@@ -8,6 +8,8 @@
 " an easy way to enable isort and black.
 "
 " Basic settings ---------------------- {{{
+"
+set tags=./tags,tags
 
 " Configure python to be python3
 set pyxversion=3
@@ -15,17 +17,15 @@ set pyxversion=3
 " Show number of matching results in buffer when searching
 set shortmess-=S
 
-" Use spaces instead of tabs
-set expandtab
-
-" Set default number of spaces per tab
+filetype plugin indent on
+" show existing tab with 4 spaces width
 set tabstop=4
-
-" Set default number of spaces per indentation
+" when indenting with '>', use 4 spaces width
 set shiftwidth=4
-
+" On pressing tab, insert 4 spaces
+set expandtab
 set autoindent
-set smartindent
+set nosmarttab
 
 " Set <Leader> key to `,`
 let mapleader=","
@@ -85,11 +85,15 @@ let g:netrw_liststyle = 3
 let g:netrw_browse_split = 4
 let g:netrw_altv = 1
 let g:netrw_winsize = 15
+let g:netrw_list_hide= '.*\.swp$'
 
-" Use easier diffing algorithm for vimdiff
-if has("patch-8.1.0360")
-  set diffopt+=internal,algorithm:patience
-endif
+augroup netrw
+  autocmd!
+  " When viewing filetree in netrw, override default <c-l> behavior (which
+  " refreshes the listing the window you just jumped from) to just move to the
+  " window on the right.
+  autocmd Filetype netrw nnoremap <buffer> <c-l> <C-w>l
+augroup END
 
 " Safe editing ----- {{{
 "
@@ -144,7 +148,8 @@ inoremap jk <ESC>
 " Use magic regex all the time! Magic regex is the type of regex that is
 " normally used in other languages. Also, enable hlsearch even if it was
 " previously disabled.
-nnoremap / :set hlsearch<cr>/\v
+" temporarily commenting this out to work with cursor
+" nnoremap / :set hlsearch<cr>/\v
 
 " Grep for word under cursor
 nnoremap <leader>G :silent execute "RG \\b" . expand("<cword>") . "\\b"<cr>
@@ -174,10 +179,11 @@ nnoremap <Leader>u :UndotreeToggle<CR>
 nnoremap <Leader>yr :YRShow<CR>
 
 " Open up the list of buffers using fzf
-nnoremap <Leader>b :Buffers<CR>
+" disabling for cursor
+" nnoremap <Leader>b :Buffers<CR>
 
 " Explore the file tree
-nnoremap <Leader>e :Lexplore<CR>
+nnoremap <Leader>e :silent execute "Lexplore " . expand("%:p:h")<CR>
 
 " Start fzf using fz
 nnoremap fz :Files<CR>
@@ -203,8 +209,9 @@ inoremap <silent> <buffer> <C-X><C-J> <Esc>ciW<Lt><C-R>"<C-R>=<CR>></<C-R>"><Esc
 command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
 
 " Bindings for copying current filename onto clipboard
-nnoremap <Leader>yp :let @+ = expand('%')<CR>
-nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
+" disabling for cursor
+" nnoremap <Leader>yp :let @+ = expand('%')<CR>
+" nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
 
 " }}}
 
@@ -313,10 +320,10 @@ let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
 " Gutentags {{{
 let g:gutentags_add_default_project_roots = 0
 let g:gutentags_project_root = ['package.json', '.git']
-let g:gutentags_cache_dir = expand('~/.cache/vim/ctags/')
 let g:gutentags_generate_on_write = 1
 let g:gutentags_generate_on_new = 1
 let g:gutentags_generate_on_missing = 1
+let g:gutentags_ctags_executable='/opt/homebrew/bin/ctags'
 let g:gutentags_ctags_extra_args = [
       \ '--tag-relative=yes',
       \ '--fields=+ailmnS',
@@ -376,18 +383,30 @@ let g:gutentags_ctags_exclude = [
 " command: pipx install 'python-lsp-server[rope, pyflakes]'
 " rope provides the completions and renaming
 " pyflakes detects various errors
+"
+call ale#linter#Define('bzl', {
+      \  'name': 'starlark',
+      \  'lsp': 'stdio',
+      \  'executable': '/Users/joe.mcgovern/go/bin/starlark-lsp',
+      \  'command': '%e start',
+      \  'project_root': '/Users/joe.mcgovern/go/src/github.com/DataDog/dd-source',
+      \})
+
 let g:ale_linters = {
-            \    'go': ['gopls'],
+            \    'go': ['gopls', 'staticcheck'],
+            \    'bzl': ['starlark'],
             \    'python': ['pylsp'],
             \    'typescript': ['eslint', 'tsserver'],
             \    'typescriptreact': ['eslint', 'tsserver'],
             \    'javascript': ['eslint', 'tsserver'],
             \    'javascriptreact': ['eslint', 'tsserver'],
             \    'terraform': ['terraform'],
+            \    'vim': ['vimls'],
+            \    'proto': ['protoc-gen-lint'],
             \}
 
 let g:ale_fixers = {
-            \    'go': ['goimports', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'go': ['goimports', 'gofmt', 'golines', 'remove_trailing_lines', 'trim_whitespace'],
             \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
             \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
             \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
@@ -420,10 +439,14 @@ let g:ale_open_list = 1
 let g:ale_list_window_size = 3
 let g:ale_python_pylsp_use_global = 1
 let g:ale_python_black_auto_pipenv = 1
-let g:ale_python_black_auto_poetry = 1
+" let g:ale_python_black_auto_poetry = 1
 let g:ale_python_isort_auto_pipenv = 1
-let g:ale_python_isort_auto_poetry = 1
+" let g:ale_python_isort_auto_poetry = 1
 let g:ale_completion_enabled = 1
+
+" by default ale will show errors on the line that you are editing,
+" which is very inconvenient. This disables that.
+let g:ale_virtualtext_cursor=0
 
 " Have clicking tab and shift-tab cycle through autocomplete suggestions
 inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -436,11 +459,6 @@ inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
 let g:startify_change_to_dir = 0
 " }}}
 
-" {{{ Rhubarb
-" Configure rhubarb-vim to look at Granular's gitlab domain
-let g:github_enterprise_urls = ['https://gitlab.internal.granular.ag']
-" }}}
-"
 " emoji-fzf -------- {{{
 " Use emoji-fzf and fzf to fuzzy-search for emoji, and insert the result
 function! InsertEmoji(emoji)
@@ -480,12 +498,12 @@ endfunction
 
 let g:zettelkasten = "~/zettel/"
 
-def ZettelNew(name: string)
-  const clean_name = join(split(name, " "), "-")
-  const fname = g:zettelkasten .. strftime("%Y%m%d%H%M") .. "-" .. clean_name .. ".md"
+func ZettelNew(name)
+  let clean_name = join(split(name, " "), "-")
+  let fname = g:zettelkasten . strftime("%Y%m%d%H%M") . "-" . clean_name . ".md"
   execute ":edit " .. fname
-  const failed = setline(".", "# " .. name)
-enddef
+  let failed = setline(".", "# " . name)
+endfunc
 
 command! -nargs=0 ZettelHome :silent execute "edit " . g:zettelkasten . "index.md"
 command! -nargs=1 ZettelNew :call ZettelNew(<f-args>)
@@ -493,3 +511,60 @@ command! -nargs=1 ZettelNew :call ZettelNew(<f-args>)
 nnoremap <leader>zn :ZettelNew
 nnoremap <leader>zh :ZettelHome<cr>
 " }}}
+
+let g:bowlcut_use_ripgrep = 1
+let g:bowlcut_prefixes = ["ExecuteActivity", "ExecuteWorkflow", "ExecuteChildWorkflow"]
+let g:bowlcut_suffixes = ["Async"]
+let g:bowlcut_include_files = ["*.go"]
+let g:bowlcut_exclude_files = ["*.pb.go"]
+augroup golang_jump
+  autocmd!
+  autocmd FileType go nnoremap <buffer> <C-]> :BowlcutJumpALE<CR>
+augroup END
+
+" augroup bazel_jump
+"   autocmd!
+"   autocmd FileType bzl nnoremap <buffer> <C-]> :BazelJumpALE<CR>
+" augroup END
+
+
+function UpdateDaysOfWeek()
+  let startDate = localtime()
+  let oneDayInSeconds = 24 * 60 * 60
+  let todayDayOfWeek = strftime("%A")
+  " Get date of nearest monday
+  while strftime("%A", startDate) != "Monday"
+    let startDate -= oneDayInSeconds
+  endwhile
+
+  " Update buffer
+  let lineNumber = line(".")
+  let lastLineNumber = line("$")
+  let currentDate = startDate
+  while lineNumber <= lastLineNumber
+    let line = getline(lineNumber)
+    let newLine = substitute(line, "YYYY-MM-DD", strftime("%Y-%m-%d", currentDate), "g")
+    if newLine != line
+      call setline(lineNumber, newLine)
+      let currentDate += oneDayInSeconds
+    endif
+    let lineNumber += 1
+  endwhile
+endfunction
+
+function FixYaml()
+  set expandtab
+  exec "retab"
+  exec "write"
+endfunc
+
+function NewFile()
+  let path = expand("%:p:h")
+  let requestedPath = input("File: ", path . "/")
+  if len(requestedPath) > 0
+    echom "opening for edit"
+    execute "edit ". requestedPath
+  endif
+endfunction
+
+nnoremap <leader>nf :call NewFile()<CR>

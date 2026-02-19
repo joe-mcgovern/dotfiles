@@ -79,3 +79,6 @@
 [submodule "home/vim/.vim/pack/plugins/start/YankRing"]
 	path = home/vim/.vim/pack/plugins/start/YankRing
 	url = git@github.com:vim-scripts/YankRing.vim.git
+[submodule "home/tmux/.tmux/plugins/tpm"]
+	path = home/tmux/.tmux/plugins/tpm
+	url = https://github.com/tmux-plugins/tpm

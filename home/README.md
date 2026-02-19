@@ -1,13 +1,9 @@
-# Stowable packages
+# Stow packages
 
-This directory contains stowable packages. Using stow allows them to be added
-piecemeal.
+Each subdirectory is a stow package. Install one with:
 
-Dotfiles can be prefixed with `dot-` instead of `.` so that they aren't hidden
-by default. The `--dotfiles` flag in stow automatically converts them to the `.`
-prefix when installing them.
+```sh
+stow --dotfiles -t "$HOME" <package>
+```
 
-To add one of these packages, run:
-`stow --dotfiles -t "$HOME" <package name>`
-
-where `<package name>` is something like `vim` or `git`
+See the top-level [README](../README.md) for full setup instructions.

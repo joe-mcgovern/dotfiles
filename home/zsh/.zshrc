@@ -1,12 +1,19 @@
 # ----- Path manipulation -----
 # Path to your oh-my-zsh installation.
-export ZSH="/Users/joemcgovern/.oh-my-zsh"
+export ZSH="$HOME/.oh-my-zsh"
+
+# Add brew to path
+export PATH="/opt/homebrew/bin:$PATH"
+
+# Add rubies to path
+export PATH="$HOME/.rubies:$PATH"
 
 # Add poetry to path
 export PATH="$HOME/.poetry/bin:$PATH"
 
 # Add pipx (and other things in .local/bin) to path
 export PATH="$HOME/.local/bin:$PATH"
+export PATH="/usr/local/bin:$PATH"
 
 # Add globally installed npm binaries to path
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
@@ -16,16 +23,28 @@ export PATH="/usr/local/go/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 
 # ----- Plugins ---------------------------------------------------------------
+# Reduced plugin set for faster startup
 plugins=(
-    asdf
     git
-    gitfast
-    pass
+    zlong_alert
+    zsh-vi-mode
     zsh-autosuggestions
     zsh-syntax-highlighting
-    zsh-vi-mode
-    emoji-fzf
 )
+
+# For bazel configuration
+fpath[1,0]=~/.zsh/completion
+zstyle ':completion:*' use-cache on
+zstyle ':completion:*' cache-path ~/.zsh/cache
+
+# Autoload completion (with cache check for speed)
+autoload -Uz compinit
+# Check if .zcompdump needs updating (only once per day)
+if [[ -n ${ZDOTDIR}/.zcompdump(#qN.mh+24) ]]; then
+  compinit
+else
+  compinit -C
+fi
 
 # Initialize oh-my-zsh
 source $ZSH/oh-my-zsh.sh
@@ -49,11 +68,14 @@ pastefinish() {
 zstyle :bracketed-paste-magic paste-init pasteinit
 zstyle :bracketed-paste-magic paste-finish pastefinish
 
-
 # ----- emoji-fzf configuration -----------------------------------------------
-EMOJI_FZF_BIN_PATH="/Users/joemcgovern/.local/bin/emoji-fzf"
+EMOJI_FZF_BIN_PATH="$HOME/.local/bin/emoji-fzf"
 EMOJI_FZF_BINDKEY="^e"
 EMOJI_FZF_FUZZY_FINDER="fzf"
+
+# ----- zlong configuration -----------------------------------------------
+zlong_duration=10
+zlong_ignore_cmds="vim ssh less git k9s kubectl k"
 
 # ----- ZVM configuration -----------------------------------------------------
 # Use `jk` to go from insert to normal mode
@@ -65,33 +87,19 @@ ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
 
 # ----- Aliases ---------------------------------------------------------------
 
-export DOCKER_IMAGES_TO_PRESERVE="searx/searx"
-
-container_ids() {
-  cmd="docker ps"
-  if [ -n "$1" ]; then
-    cmd="$cmd $1"
-  fi
-  eval $cmd | awk 'NR != 1 && index($2, "'$DOCKER_IMAGES_TO_PRESERVE'") == 0 {print $1}'
-}
-
-alias dka='docker kill $(container_ids)'
-alias dca='docker rm $(container_ids -a)'
-
-# FZF aliases with git. I got these from here:
-# https://gist.github.com/junegunn/8b572b8d4b5eddd8b85e5f4d40f17236#file-functions-sh-L41
-source /usr/local/bin/fzf-git-functions.sh
+alias g="git"
 alias gc='git commit -m'
-alias gb='git checkout $(_gb)'
-alias gs='_gf'
+alias gs='git status'
 alias ga='git add'
-alias gl='git show $(_gh)'
 alias gn='git new'
 alias gr='git restore'
 alias gco='git co'
 alias lg="lazygit"
 alias ls="exa --no-user --long --no-permissions --icons --header --no-time"
 alias tf='terraform'
+alias k="kubectl"
+# This sets the default namesapce. Use this like `kn <namespace>`
+alias kn="kubectl config set-context --current --namespace"
 
 # ----- Various tool initializations ------------------------------------------
 
@@ -102,25 +110,10 @@ export FZF_DEFAULT_COMMAND='rg --files --hidden --follow -g "!{.git,node_modules
 # export FZF_DEFAULT_COMMAND='git ls-files 2> /dev/null'
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
-# Initialize starship prompt
-eval "$(starship init zsh)"
-
-# Configure nvm
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export NPM_LIB_PATH=$(npm root -g)
-export PATH="$PATH:$NPM_LIB_PATH"
-
-# Add terraform autocompletions
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/terraform terraform
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/joemcgovern/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/joemcgovern/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/joemcgovern/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/joemcgovern/google-cloud-sdk/completion.zsh.inc'; fi
+# Initialize starship prompt (lazy load for speed)
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
 
 [ -f ~/fzf.zsh ] && source ~/fzf.zsh
 
@@ -139,3 +132,26 @@ function my_init() {
   bindkey "^[[B" down-line-or-beginning-search # Down
 }
 zvm_after_init_commands+=(my_init)
+
+# google-cloud-sdk brew caveat (conditional loading)
+[ -f "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
+[ -f "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
+
+export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+export PATH="$HOME/.volta/bin:$PATH"
+
+
+# Enable brew autocompletion (avoid duplicate compinit)
+if type brew &>/dev/null
+then
+  FPATH="$(brew --prefix)/share/zsh/site-functions:${FPATH}"
+fi
+
+# Initialize zoxide (lazy load for speed)
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
+export GH_DASH_CONFIG=$HOME/gh-dash/config.yaml
+
+alias gsti="~/dev/fzf-git.sh"
