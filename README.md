@@ -19,15 +19,30 @@ It works for anything under `$HOME`:
 ./bin/dotfiles add ~/.somerc            # dotfile in $HOME
 ```
 
-## New machine setup
+## Linux workspace setup
+
+For provisioning Linux workspaces (apt-based), there's a one-liner:
+
+```sh
+git clone --recursive <repo-url> ~/dev/dotfiles
+cd ~/dev/dotfiles
+./install.sh
+```
+
+This installs all dependencies (stow, tmux, neovim, starship, fzf, oh-my-zsh,
+etc.), symlinks everything into `$HOME`, and sets up tmux/zsh plugins.
+
+## macOS setup
 
 ```sh
 brew install stow
-git clone <repo-url> ~/dev/dotfiles
+git clone --recursive <repo-url> ~/dev/dotfiles
 cd ~/dev/dotfiles
 ./bin/dotfiles stow          # symlink all configs into $HOME
 ./bin/dotfiles stow nvim git # or just specific ones
 ```
+
+Install other tools with `brew` as needed (tmux, neovim, starship, fzf, etc.).
 
 ## Other commands
 
