@@ -33,7 +33,7 @@ fi
 
 if ! command -v nvim &>/dev/null; then
   info "Installing neovim..."
-  curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux64.tar.gz \
+  curl -fsSL https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz \
     | sudo tar xz -C /usr/local --strip-components=1
 fi
 
