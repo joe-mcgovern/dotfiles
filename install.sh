@@ -103,9 +103,4 @@ git -C "$DOTFILES_DIR" submodule update --init --recursive
 info "Stowing dotfiles..."
 "$DOTFILES_DIR/bin/dotfiles" stow
 
-# --- TPM plugins ---
-
-info "Installing tmux plugins..."
-"$DOTFILES_DIR/home/tmux/.tmux/plugins/tpm/bin/install_plugins"
-
-info "Done."
+info "Done. Open tmux and press prefix + I to install tmux plugins."
