@@ -83,7 +83,7 @@ declare -A zsh_plugins=(
   [zsh-autosuggestions]="https://github.com/zsh-users/zsh-autosuggestions"
   [zsh-syntax-highlighting]="https://github.com/zsh-users/zsh-syntax-highlighting"
   [zsh-vi-mode]="https://github.com/jeffreytse/zsh-vi-mode"
-  [zlong_alert]="https://github.com/kevinbentley/zlong_alert.zsh"
+  [zlong_alert]="https://github.com/kevinywlui/zlong_alert.zsh"
 )
 
 for plugin in "${!zsh_plugins[@]}"; do
