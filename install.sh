@@ -106,6 +106,6 @@ info "Stowing dotfiles..."
 # --- TPM plugins ---
 
 info "Installing tmux plugins..."
-~/.tmux/plugins/tpm/bin/install_plugins
+"$DOTFILES_DIR/home/tmux/.tmux/plugins/tpm/bin/install_plugins"
 
 info "Done."
