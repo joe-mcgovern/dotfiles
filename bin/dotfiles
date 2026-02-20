@@ -83,8 +83,11 @@ cmd_stow() {
       echo "error: package '$pkg' not found" >&2
       exit 1
     fi
-    (cd "$HOME_DIR" && stow --dotfiles -t "$HOME" "$pkg")
-    echo "stowed $pkg"
+    if (cd "$HOME_DIR" && stow --adopt --dotfiles -t "$HOME" "$pkg"); then
+      echo "stowed $pkg"
+    else
+      echo "warning: failed to stow $pkg" >&2
+    fi
   done
 }
 

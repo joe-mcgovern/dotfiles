@@ -1,6 +1,7 @@
 .claude/settings.local.json
 
 home/vim/.vim/undo/*
+home/vim/.vim/pack/
 
 # Sensitive files
 home/gh/.config/gh/hosts.yml

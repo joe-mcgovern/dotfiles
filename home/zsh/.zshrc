@@ -155,3 +155,7 @@ fi
 export GH_DASH_CONFIG=$HOME/gh-dash/config.yaml
 
 alias gsti="~/dev/fzf-git.sh"
+
+# BEGIN CLAUDE TRAJECTORY MANAGED BLOCK
+export PATH="/Users/joe.mcgovern/.datadog/bin:$PATH"
+# END CLAUDE TRAJECTORY MANAGED BLOCK
