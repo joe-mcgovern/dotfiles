@@ -1,9 +1,6 @@
 [submodule "home/vim/.vim/pack/tpope/start/vim-surround"]
 	path = home/vim/.vim/pack/tpope/start/vim-surround
 	url = https://github.com/tpope/vim-surround.git
-[submodule "home/vim/.vim/pack/tpope/start/sensible"]
-	path = home/vim/.vim/pack/tpope/start/sensible
-	url = https://tpope.io/vim/sensible.git
 [submodule "home/vim/.vim/pack/tpope/start/fugitive"]
 	path = home/vim/.vim/pack/tpope/start/fugitive
 	url = https://tpope.io/vim/fugitive.git
