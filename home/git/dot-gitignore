@@ -1,0 +1,15 @@
+tags
+*.swp
+*.swo
+.yalc
+.rgignore
+.ignore
+.cursorindexignore
+.goplsignore
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+
+**/.claude/settings.local.json

@@ -1,0 +1,11 @@
+.DS_Store
+
+home/vim/.vim/undo/*
+home/vim/.vim/pack/
+
+# Sensitive files
+home/gh/.config/gh/hosts.yml
+home/graphite/.config/graphite/user_config
+
+# Alacritty themes (external repo, not tracked)
+home/alacritty/.config/alacritty/themes/

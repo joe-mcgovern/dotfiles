@@ -1,0 +1,563 @@
+" Use za in normal mode to unfold any section
+" Use zR to expand all folds
+" Use zM to close all folds
+"
+" Currently using ALE to make vim act like an IDE for python, and Coc for
+" everything else. Unfortunately, Coc doesn't have a plugin that respects
+" virtualenvs, which every project I work on uses. I also wasn't able to find
+" an easy way to enable isort and black.
+"
+" Basic settings ---------------------- {{{
+"
+set tags=./tags,tags
+
+" Keep installed packages outside the public dotfiles checkout.
+set packpath^=~/.local/share/vim
+
+" Configure python to be python3
+set pyxversion=3
+
+" Show number of matching results in buffer when searching
+set shortmess-=S
+
+filetype plugin indent on
+" show existing tab with 4 spaces width
+set tabstop=4
+" when indenting with '>', use 4 spaces width
+set shiftwidth=4
+" On pressing tab, insert 4 spaces
+set expandtab
+set autoindent
+set nosmarttab
+
+" Set <Leader> key to `,`
+let mapleader=","
+
+" Allow copying to / pasting from system clipboard
+set clipboard=unnamed
+
+" Configure line numbers
+set number
+set relativenumber
+
+" Ignore case when searching buffer
+set ignorecase
+
+" Allow `:find` to search recursively
+set path+=**
+
+" Use this vim configuration when editing a vimrc file
+set nocp
+
+" Enable syntax highlighting
+syntax on
+
+" Highlight a column to know when to break
+set colorcolumn=80
+
+" Highlight all matches when searching
+set hlsearch
+
+" Set syntax theme to gruvbox. Vim has some built in schemes, but
+" custom ones can be added via the ~/.vim/colors directory
+" The lines above the colorscheme declaration are necessary for the specific
+" gruvbox theme to work in vim + tmux
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"
+set termguicolors
+set background=dark
+colorscheme gruvbox
+
+" Strip trailing whitespace on save
+function StripTrailingWhitespace ()
+    " don't strip on these filetypes
+    if &ft =~ 'markdown'
+        return
+    endif
+    %s/\s\+$//e
+endfunction
+
+augroup strip_whitespace
+  autocmd!
+  autocmd BufWritePre * call StripTrailingWhitespace()
+augroup END
+
+" Configure file explorer
+let g:netrw_banner = 0
+let g:netrw_dirhistmax = 0
+let g:netrw_liststyle = 3
+let g:netrw_browse_split = 4
+let g:netrw_altv = 1
+let g:netrw_winsize = 15
+let g:netrw_list_hide= '.*\.swp$'
+
+augroup netrw
+  autocmd!
+  " When viewing filetree in netrw, override default <c-l> behavior (which
+  " refreshes the listing the window you just jumped from) to just move to the
+  " window on the right.
+  autocmd Filetype netrw nnoremap <buffer> <c-l> <C-w>l
+augroup END
+
+" Safe editing ----- {{{
+"
+" Thanks to https://begriffs.com/posts/2019-07-19-history-use-vim.html
+" Protect changes between writes. Default values of
+" updatecount (200 keystrokes) and updatetime
+" (4 seconds) are fine
+set swapfile
+set directory^=~/.local/state/vim/swap//
+
+" protect against crash-during-write
+set writebackup
+" but do not persist backup after successful write
+set nobackup
+" use rename-and-write-new method whenever safe
+set backupcopy=auto
+if has("patch-8.1.0251")
+	" consolidate the writebackups -- not a big
+	" deal either way, since they usually get deleted
+	set backupdir^=~/.local/state/vim/backup//
+end
+
+" save undo trees in files
+set undofile
+set undodir=~/.local/state/vim/undo
+
+" number of undo saved
+set undolevels=10000
+
+" }}}
+
+" function Autosave ()
+"   if &ft =~ "startify"
+"     return
+"   endif
+"   execute ":w"
+" endfunction
+"
+" augroup save_on_leave
+"   autocmd!
+"   " Maybe this should be FocusLost?
+"   autocmd InsertLeave * call Autosave()
+" augroup END
+
+
+" }}}
+
+" Global Mappings ---------------------- {{{
+" Use `jk` to go into normal mode
+inoremap jk <ESC>
+
+" Use magic regex all the time! Magic regex is the type of regex that is
+" normally used in other languages. Also, enable hlsearch even if it was
+" previously disabled.
+" temporarily commenting this out to work with cursor
+" nnoremap / :set hlsearch<cr>/\v
+
+" Grep for word under cursor
+nnoremap <leader>G :silent execute "RG \\b" . expand("<cword>") . "\\b"<cr>
+
+" Search and replace word under cursor within current file
+nnoremap <leader>r :%s/<C-r><C-w>/
+
+" Toggle search highlight
+nnoremap <leader>h :set hlsearch!<CR>
+
+" Map next/previous quickfix error
+nnoremap <leader>ne :cnext<CR>
+nnoremap <leader>pe :cprevious<CR>
+
+" Open vimrc for editing using `ev`
+nnoremap ev :split $MYVIMRC<CR>
+" Reload vimrc using `rv`
+nnoremap rv :source $MYVIMRC<CR>
+
+" Use <Leader>I to attempt to import the word under cursor
+nnoremap <Leader>I :ALEImport<CR>
+
+" Use <Leader>u to toggle the undo tree
+nnoremap <Leader>u :UndotreeToggle<CR>
+
+" Use <Leader>yr to show yank ring
+nnoremap <Leader>yr :YRShow<CR>
+
+" Open up the list of buffers using fzf
+" disabling for cursor
+" nnoremap <Leader>b :Buffers<CR>
+
+" Explore the file tree
+nnoremap <Leader>e :silent execute "Lexplore " . expand("%:p:h")<CR>
+
+" Start fzf using fz
+nnoremap fz :Files<CR>
+
+" Use Control-d to delete the current line in insert mode
+inoremap <C-d> <esc>dd$a
+
+" GIT BINDINGS
+nnoremap <Leader>ga :Gwrite<CR>
+nnoremap <Leader>gs :Git save<CR>
+nnoremap <Leader>gc :Git commit<CR>
+nnoremap <Leader>gp :Git push<CR>
+nnoremap <Leader>gfp :Git fp<CR>
+
+cabbr Rename GRename
+
+" Use <C-X><C-J> when on a word to wrap it in a tag and add a closing tag to
+" it
+inoremap <silent> <buffer> <C-X><C-J> <Esc>ciW<Lt><C-R>"<C-R>=<CR>></<C-R>"><Esc>F<i
+
+" Use :RG <regex> to invoke ripgrep with the provided regex and have fzf
+" render the results.
+command! -nargs=* -bang RG call RipgrepFzf(<q-args>, <bang>0)
+
+" Bindings for copying current filename onto clipboard
+" disabling for cursor
+" nnoremap <Leader>yp :let @+ = expand('%')<CR>
+" nnoremap <Leader>yfp :let @+ = expand('%:p')<CR>
+
+" }}}
+
+" Filetype specific mappings ---------------------- {{{
+
+" gitcommit {{{
+augroup filetype_gitcommit
+  autocmd!
+  " Highlight columns for git commit message 50 for subject, 72 for body
+  autocmd FileType gitcommit set colorcolumn=50,72
+  autocmd FileType gitcommit setlocal spell spelllang=en_us
+augroup END
+" }}}
+
+" markdown {{{
+augroup filetype_markdown
+  autocmd!
+  autocmd FileType markdown setlocal spell spelllang=en_us
+augroup END
+" }}}
+
+" vim {{{
+
+augroup filetype_vim
+  autocmd!
+  autocmd FileType vim setlocal foldmethod=marker foldlevelstart=0 shiftwidth=2 tabstop=2
+  autocmd Filetype vim iabbrev <buffer> == ==#
+  " autocmd BufWritePre *.vimrc call ReplaceStartingHashtagsWithDoubleQuotes()
+augroup END
+" }}}
+" }}}
+
+" Status line ---------------------- {{{
+" Configure status line
+let g:lightline = {
+  \     'active': {
+  \         'left': [['mode', 'paste' ], ['cocstatus', 'gitbranch', 'readonly', 'cwd', 'relativepath', 'modified']],
+  \     },
+  \     'component_function': {
+  \         'gitbranch': 'fugitive#head',
+  \         'cocstatus': 'coc#status',
+  \         'cwd': 'LightlineCwd',
+  \     },
+  \ }
+
+
+function LightlineCwd()
+  " Remove $HOME from current working directory
+  let l:path_without_home = substitute(getcwd(), $HOME . "/", "", "")
+  " If the directory is nested within some kind of dev directory, remove the
+  " dev directory from the path as well
+  return substitute(l:path_without_home, "^[a-zA-Z]*dev/", "", "i")
+endfunction
+
+" }}}
+
+" Plugin configuration ---------------------- {{{
+"
+" This was for a custom plugin I made for completions within gitlab ci.
+" I have since installed deoplete which takes care of this for me.
+" let g:search_replace_pre_execution_options = {
+"       \ "g:ale_fix_on_save": 0
+"       \}
+
+let g:terraform_fmt_on_save = 1
+
+" Undotree ----------------- {{{
+let g:undotree_SetFocusWhenToggle = 1
+" }}}
+
+" FZF ---------------------- {{{
+
+function! s:build_quickfix_list(lines)
+  call setqflist(map(copy(a:lines), '{ "filename": v:val }'))
+  copen
+  cc
+endfunction
+
+
+" Insert a markdown link for all selected files
+function! s:insert_link(lines)
+  let l:links = []
+
+  for l:line in a:lines
+    let l:fname_wo_date = substitute(l:line, '[0-9]\+\-', '', '')
+    let l:fname_wo_ext = substitute(l:fname_wo_date, '\..*$', '', '')
+    let l:fname_wo_hyphens = substitute(l:fname_wo_ext, '\-', ' ', 'g')
+    let l:links = add(l:links, "[" . l:fname_wo_hyphens . "](" . l:line . ")")
+  endfor
+  echom l:links
+  " Must declare a variable here so that vim can open without complaining.
+  let l:failed = append(line("."), l:links)
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-q': function('s:build_quickfix_list'),
+  \ 'ctrl-l': function('s:insert_link'),
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+let $FZF_DEFAULT_OPTS = '--bind ctrl-a:select-all'
+
+" }}}
+
+" Gutentags {{{
+let g:gutentags_add_default_project_roots = 0
+let g:gutentags_project_root = ['package.json', '.git']
+let g:gutentags_generate_on_write = 1
+let g:gutentags_generate_on_new = 1
+let g:gutentags_generate_on_missing = 1
+let g:gutentags_ctags_executable='/opt/homebrew/bin/ctags'
+let g:gutentags_ctags_extra_args = [
+      \ '--tag-relative=yes',
+      \ '--fields=+ailmnS',
+      \ ]
+
+let g:gutentags_ctags_exclude = [
+      \ '*.git', '*.svg', '*.hg',
+      \ '*/tests/*',
+      \ 'build',
+      \ 'dist',
+      \ '*sites/*/files/*',
+      \ 'bin',
+      \ 'node_modules',
+      \ 'bower_components',
+      \ 'cache',
+      \ 'compiled',
+      \ 'docs',
+      \ 'example',
+      \ 'bundle',
+      \ 'vendor',
+      \ '*.md',
+      \ '*-lock.json',
+      \ '*.lock',
+      \ '*bundle*.js',
+      \ '*build*.js',
+      \ '.*rc*',
+      \ '*.json',
+      \ '*.min.*',
+      \ '*.map',
+      \ '*.bak',
+      \ '*.zip',
+      \ '*.pyc',
+      \ '*.class',
+      \ '*.sln',
+      \ '*.Master',
+      \ '*.csproj',
+      \ '*.tmp',
+      \ '*.csproj.user',
+      \ '*.cache',
+      \ '*.pdb',
+      \ 'tags*',
+      \ 'cscope.*',
+      \ '*.css',
+      \ '*.less',
+      \ '*.scss',
+      \ '*.exe', '*.dll',
+      \ '*.mp3', '*.ogg', '*.flac',
+      \ '*.swp', '*.swo',
+      \ '*.bmp', '*.gif', '*.ico', '*.jpg', '*.png',
+      \ '*.rar', '*.zip', '*.tar', '*.tar.gz', '*.tar.xz', '*.tar.bz2',
+      \ '*.pdf', '*.doc', '*.docx', '*.ppt', '*.pptx',
+      \ ]
+" }}}
+
+" ALE {{{
+" pylsp is the language server. pylsp was installed using the following
+" command: pipx install 'python-lsp-server[rope, pyflakes]'
+" rope provides the completions and renaming
+" pyflakes detects various errors
+"
+let g:ale_linters = {
+            \    'go': ['gopls', 'staticcheck'],
+            \    'python': ['pylsp'],
+            \    'typescript': ['eslint', 'tsserver'],
+            \    'typescriptreact': ['eslint', 'tsserver'],
+            \    'javascript': ['eslint', 'tsserver'],
+            \    'javascriptreact': ['eslint', 'tsserver'],
+            \    'terraform': ['terraform'],
+            \    'vim': ['vimls'],
+            \    'proto': ['protoc-gen-lint'],
+            \}
+
+let g:ale_fixers = {
+            \    'go': ['goimports', 'gofmt', 'golines', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'python': ['autoflake', 'isort', 'black', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'typescript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'typescriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'javascript': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'javascriptreact': ['prettier', 'remove_trailing_lines', 'trim_whitespace'],
+            \    'terraform': ['terraform', 'remove_trailing_lines', 'trim_whitespace'],
+            \}
+" For filetypes where I explicitly enable ale, use ALEGoToDefinition instead
+" of the standard 'tag jump' function. ALEGoToDefinition does a better job at
+" jumping to the source (rather than the import at the top of the file).
+" However, vim jumps are desirable for my non-ale files (like vim help files)
+" because ale's jump to definition doesn't work.
+augroup ale_mappings
+  autocmd!
+  for key in keys(g:ale_linters)
+    execute 'autocmd! FileType ' . key . ' nnoremap <buffer> <C-]> :keepjumps ALEGoToDefinition<CR>'
+  endfor
+augroup END
+
+let g:ale_fix_on_save = 1
+let g:ale_lint_delay = 100
+let g:ale_lint_on_enter = 1
+let g:ale_lint_on_save = 1
+" Only run linters named in ale_linters settings.
+let g:ale_linters_explicit = 1
+let g:ale_lint_on_text_changed = 0
+let g:ale_set_loclist = 1
+let g:ale_set_quickfix = 0
+let g:ale_open_list = 1
+let g:ale_list_window_size = 3
+let g:ale_python_pylsp_use_global = 1
+let g:ale_python_black_auto_pipenv = 1
+" let g:ale_python_black_auto_poetry = 1
+let g:ale_python_isort_auto_pipenv = 1
+" let g:ale_python_isort_auto_poetry = 1
+let g:ale_completion_enabled = 1
+
+" by default ale will show errors on the line that you are editing,
+" which is very inconvenient. This disables that.
+let g:ale_virtualtext_cursor=0
+
+" Have clicking tab and shift-tab cycle through autocomplete suggestions
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <silent><expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-TAB>"
+
+" }}}
+
+" Startify {{{
+" Don't let startify change the directory
+let g:startify_change_to_dir = 0
+" }}}
+
+" emoji-fzf -------- {{{
+" Use emoji-fzf and fzf to fuzzy-search for emoji, and insert the result
+function! InsertEmoji(emoji)
+    let @a = system('cut -d " " -f 1 | emoji-fzf get', a:emoji)
+    normal! "agP
+endfunction
+
+command! -bang Emoj
+  \ call fzf#run({
+      \ 'source': 'emoji-fzf preview',
+      \ 'options': '--preview ''emoji-fzf get --name {1}''',
+      \ 'sink': function('InsertEmoji')
+      \ })
+" Ctrl-e in normal and insert mode will open the emoji picker.
+" Unfortunately doesn't bring you back to insert mode 😕
+map <C-e> :Emoj<CR>
+imap <C-e> <C-o><C-e>
+" }}}
+
+
+" }}}
+
+" Custom functions ---------------------- {{{
+
+function! RipgrepFzf(query, fullscreen)
+  let command_fmt = 'rg --column --line-number --no-heading --color=always --smart-case -- %s || true'
+  let initial_command = printf(command_fmt, shellescape(a:query))
+  let reload_command = printf(command_fmt, '{q}')
+  let spec = {'options': ['--phony', '--query', a:query, '--bind', 'change:reload:'.reload_command]}
+  call fzf#vim#grep(initial_command, 1, fzf#vim#with_preview(spec), a:fullscreen)
+endfunction
+
+" }}}
+
+
+" Custom zettel plugin --- {{{
+
+let g:zettelkasten = "~/zettel/"
+
+func ZettelNew(name)
+  let clean_name = join(split(name, " "), "-")
+  let fname = g:zettelkasten . strftime("%Y%m%d%H%M") . "-" . clean_name . ".md"
+  execute ":edit " .. fname
+  let failed = setline(".", "# " . name)
+endfunc
+
+command! -nargs=0 ZettelHome :silent execute "edit " . g:zettelkasten . "index.md"
+command! -nargs=1 ZettelNew :call ZettelNew(<f-args>)
+
+nnoremap <leader>zn :ZettelNew
+nnoremap <leader>zh :ZettelHome<cr>
+" }}}
+
+let g:bowlcut_use_ripgrep = 1
+let g:bowlcut_prefixes = ["ExecuteActivity", "ExecuteWorkflow", "ExecuteChildWorkflow"]
+let g:bowlcut_suffixes = ["Async"]
+let g:bowlcut_include_files = ["*.go"]
+let g:bowlcut_exclude_files = ["*.pb.go"]
+augroup golang_jump
+  autocmd!
+  autocmd FileType go nnoremap <buffer> <C-]> :BowlcutJumpALE<CR>
+augroup END
+
+function UpdateDaysOfWeek()
+  let startDate = localtime()
+  let oneDayInSeconds = 24 * 60 * 60
+  let todayDayOfWeek = strftime("%A")
+  " Get date of nearest monday
+  while strftime("%A", startDate) != "Monday"
+    let startDate -= oneDayInSeconds
+  endwhile
+
+  " Update buffer
+  let lineNumber = line(".")
+  let lastLineNumber = line("$")
+  let currentDate = startDate
+  while lineNumber <= lastLineNumber
+    let line = getline(lineNumber)
+    let newLine = substitute(line, "YYYY-MM-DD", strftime("%Y-%m-%d", currentDate), "g")
+    if newLine != line
+      call setline(lineNumber, newLine)
+      let currentDate += oneDayInSeconds
+    endif
+    let lineNumber += 1
+  endwhile
+endfunction
+
+function FixYaml()
+  set expandtab
+  exec "retab"
+  exec "write"
+endfunc
+
+function NewFile()
+  let path = expand("%:p:h")
+  let requestedPath = input("File: ", path . "/")
+  if len(requestedPath) > 0
+    echom "opening for edit"
+    execute "edit ". requestedPath
+  endif
+endfunction
+
+nnoremap <leader>nf :call NewFile()<CR>
+
+if filereadable(expand('~/.vimrc.local'))
+  execute 'source ' . fnameescape(expand('~/.vimrc.local'))
+endif

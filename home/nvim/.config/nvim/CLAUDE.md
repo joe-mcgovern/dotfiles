@@ -1,0 +1,7 @@
+- This directory and subdirectories contain configuration for neovim
+- We use lazyvim (<https://www.lazyvim.org/>) to configure neovim. You can look up their documentation if you need to.
+- Plugins can be added/configured in the ./lua/plugins directory. We use lazy.nvim (<https://github.com/folke/lazy.nvim>) as a plugin manager.
+- Keymappings are stored in ./lua/config/keymaps.lua
+- Autocmds are stored in ./lua/config/autocmds.lua
+- Other generic configuration is stored in ./lua/config/options.lua
+- Always ask permission before updating a file
