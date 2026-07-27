@@ -5,7 +5,7 @@ usage() {
   cat <<'EOF'
 Usage:
   workspace-dev create [--name name] [--repo owner/repository] [repo-path]
-  workspace-dev sync <name>
+  workspace-dev sync <name> [repo-path]
   workspace-dev verify <name>
 EOF
   exit 1
@@ -129,6 +129,26 @@ create_workspace() {
   trap - RETURN
 
   configure_workspace_ssh "$name"
+  sync_workspace "$name" "$repository" "$branch"
+}
+
+sync_command() {
+  [[ $# -ge 1 && $# -le 2 ]] || usage
+  local name="$1"
+  if [[ $# -eq 1 ]]; then
+    sync_workspace "$name"
+    return
+  fi
+
+  local repository_path origin repository branch
+  repository_path="$(cd "$2" && pwd)"
+  git -C "$repository_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+    || die "not a Git repository: $repository_path"
+  origin="$(git -C "$repository_path" remote get-url origin)" \
+    || die "repository has no origin remote: $repository_path"
+  repository="$(github_repository "$origin")"
+  branch="$(git -C "$repository_path" branch --show-current)"
+  [[ -n "$branch" ]] || die "repository is not on a branch: $repository_path"
   sync_workspace "$name" "$repository" "$branch"
 }
 
@@ -348,7 +368,7 @@ REMOTE
 [[ $# -ge 1 ]] || usage
 case "$1" in
   create) shift; create_workspace "$@" ;;
-  sync) shift; sync_workspace "$@" ;;
+  sync) shift; sync_command "$@" ;;
   verify) shift; verify_workspace "$@" ;;
   *) usage ;;
 esac

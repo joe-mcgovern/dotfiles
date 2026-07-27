@@ -43,7 +43,7 @@ finalizes generic x86 workspaces:
 
 ```sh
 workspace-dev create ~/src/owner/repository
-workspace-dev sync repository-x86
+workspace-dev sync repository-x86 [~/src/owner/repository]
 workspace-dev verify repository-x86
 ```
 
@@ -53,7 +53,9 @@ uses zsh. It refuses a name already shown by `workspaces list`. Both `create`
 and `sync` require an SSH agent with an identity and verify that the generated
 `workspace-<name>` alias enables agent forwarding. The remote finalization
 clones or fast-forwards `pi-config` and `datadog-pi-packages` using
-credential-free SSH remotes, then reruns the dotfiles and Pi installers.
+credential-free SSH remotes, then reruns the dotfiles and Pi installers. Pass a
+repository path to `sync` when recovering a workspace that was provisioned but
+had not yet recorded its primary repository metadata.
 
 `verify` checks the architecture, required tools, Docker Compose, both
 checkouts and remotes, Pi-managed links, and a configured Git identity. The
