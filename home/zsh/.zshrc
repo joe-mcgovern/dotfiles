@@ -85,8 +85,8 @@ zlong_ignore_cmds="vim ssh less git k9s kubectl k"
 # ----- ZVM configuration -----------------------------------------------------
 # Use `jk` to go from insert to normal mode
 ZVM_VI_INSERT_ESCAPE_BINDKEY="jk"
-# Use "nex" readkey engine, which is supposedly better than zle (default)
-ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_NEX
+# Use zsh's stable line editor; the beta NEX engine can duplicate remote PTY input.
+ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_ZLE
 # Always starting with insert mode for each command line
 ZVM_LINE_INIT_MODE=$ZVM_MODE_INSERT
 

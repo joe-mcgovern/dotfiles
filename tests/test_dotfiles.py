@@ -237,6 +237,13 @@ class WorkspaceDevTest(unittest.TestCase):
         self.assertNotIn("--api-key", script)
 
 
+class ZshStateTest(unittest.TestCase):
+    def test_remote_shell_uses_stable_zle_input_engine(self):
+        config = (ROOT / "home/zsh/.zshrc").read_text()
+        self.assertIn("ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_ZLE", config)
+        self.assertNotIn("ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_NEX", config)
+
+
 class TmuxStateTest(unittest.TestCase):
     def test_downloaded_plugins_stay_outside_the_repository(self):
         config = (ROOT / "home/tmux/.tmux.conf").read_text()
