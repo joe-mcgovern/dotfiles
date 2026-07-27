@@ -246,6 +246,20 @@ class TmuxStateTest(unittest.TestCase):
         )
         self.assertIn("run '~/.tmux/plugins/tpm/tpm'", config)
 
+    def test_newer_pi_options_are_guarded_for_workspace_tmux(self):
+        config = (ROOT / "home/tmux/.tmux.conf").read_text()
+        self.assertIn("set -g extended-keys on", config)
+        self.assertIn(
+            "if-shell -F '#{>=:#{version},3.3}' 'set -g extended-keys-format csi-u'",
+            config,
+        )
+        self.assertIn(
+            "if-shell -F '#{>=:#{version},3.3}' 'set -g allow-passthrough on'",
+            config,
+        )
+        self.assertNotIn("\nset -g extended-keys-format csi-u\n", config)
+        self.assertNotIn("\nset -g allow-passthrough on\n", config)
+
 
 class VimStateTest(unittest.TestCase):
     def test_mutable_state_stays_outside_the_repository(self):
