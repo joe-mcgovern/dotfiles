@@ -1,0 +1,272 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+Usage:
+  workspace-dev create [--name name] [--repo owner/repository] [repo-path]
+  workspace-dev sync <name>
+  workspace-dev verify <name>
+EOF
+  exit 1
+}
+
+die() {
+  printf 'workspace-dev: %s\n' "$*" >&2
+  exit 1
+}
+
+require_command() {
+  command -v "$1" >/dev/null 2>&1 || die "required command not found: $1"
+}
+
+validate_name() {
+  [[ "$1" =~ ^[A-Za-z0-9][A-Za-z0-9-]*$ ]] || die "invalid workspace name: $1"
+}
+
+require_forwarded_auth() {
+  [[ -n "${SSH_AUTH_SOCK:-}" && -S "$SSH_AUTH_SOCK" ]] || die "SSH_AUTH_SOCK is required to finalize private repositories"
+  ssh-add -l >/dev/null 2>&1 || die "no SSH identity is available through SSH_AUTH_SOCK"
+}
+
+workspace_alias() {
+  printf 'workspace-%s\n' "$1"
+}
+
+configure_workspace_ssh() {
+  local name="$1"
+  local alias
+  alias="$(workspace_alias "$name")"
+
+  workspaces ssh-config "$name"
+  ssh -G "$alias" | awk '$1 == "forwardagent" && $2 == "yes" { found = 1 } END { exit !found }' \
+    || die "SSH alias $alias does not enable ForwardAgent"
+}
+
+workspace_is_listed() {
+  local name="$1"
+  workspaces list --no-color | awk 'NR > 1 && NF { print $1 }' | grep -Fqx "$name"
+}
+
+github_repository() {
+  local origin="$1"
+  local repository
+
+  case "$origin" in
+    git@github.com:*) repository="${origin#git@github.com:}" ;;
+    git@*.github.com:*) repository="${origin#*:}" ;;
+    ssh://git@github.com/*) repository="${origin#ssh://git@github.com/}" ;;
+    https://github.com/*) repository="${origin#https://github.com/}" ;;
+    *) die "origin is not a GitHub repository: $origin" ;;
+  esac
+
+  repository="${repository%.git}"
+  [[ "$repository" == */* && "$repository" != */*/* ]] || die "origin is not an owner/repository GitHub URL: $origin"
+  printf '%s\n' "$repository"
+}
+
+create_workspace() {
+  require_command git
+  require_command workspaces
+  require_command ssh
+  require_command ssh-add
+  require_forwarded_auth
+
+  local name_override="" repository_override="" repository_path=""
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --name)
+        [[ $# -ge 2 ]] || die "--name requires a value"
+        name_override="$2"
+        shift 2
+        ;;
+      --repo)
+        [[ $# -ge 2 ]] || die "--repo requires owner/repository"
+        repository_override="$2"
+        shift 2
+        ;;
+      --*) die "unknown create option: $1" ;;
+      *)
+        [[ -z "$repository_path" ]] || usage
+        repository_path="$1"
+        shift
+        ;;
+    esac
+  done
+
+  repository_path="${repository_path:-$PWD}"
+  repository_path="$(cd "$repository_path" && pwd)"
+  git -C "$repository_path" rev-parse --is-inside-work-tree >/dev/null 2>&1 \
+    || die "not a Git repository: $repository_path"
+
+  local origin branch repository repository_name name
+  origin="$(git -C "$repository_path" remote get-url origin)" \
+    || die "repository has no origin remote: $repository_path"
+  repository="${repository_override:-$(github_repository "$origin")}"
+  [[ "$repository" == */* && "$repository" != */*/* ]] || die "repository must be owner/repository: $repository"
+  repository_name="${repository##*/}"
+  branch="$(git -C "$repository_path" branch --show-current)"
+  [[ -n "$branch" ]] || die "repository is not on a branch: $repository_path"
+  name="${name_override:-${repository_name}-x86}"
+  validate_name "$name"
+
+  if workspace_is_listed "$name"; then
+    die "workspace is already listed: $name"
+  fi
+
+  workspaces create "$name" \
+    --repo "$repository" \
+    --branch "$branch" \
+    --instance-type aws:m5d.4xlarge \
+    --region us-east-1 \
+    --shell zsh \
+    --yes
+  configure_workspace_ssh "$name"
+  sync_workspace "$name"
+}
+
+sync_workspace() {
+  [[ $# -eq 1 ]] || usage
+  require_command ssh
+  require_command ssh-add
+  require_command workspaces
+
+  local name="$1"
+  validate_name "$name"
+  require_forwarded_auth
+  configure_workspace_ssh "$name"
+  workspaces dotfiles sync "$name"
+
+  ssh -o BatchMode=yes "$(workspace_alias "$name")" 'bash -s' <<'REMOTE'
+set -euo pipefail
+
+export PATH="$HOME/.local/bin:$HOME/.volta/bin:$HOME/.bun/bin:$PATH"
+
+[[ -n "${SSH_AUTH_SOCK:-}" && -S "$SSH_AUTH_SOCK" ]] || {
+  echo "workspace-dev: forwarded SSH_AUTH_SOCK is required for private repository finalization" >&2
+  exit 1
+}
+ssh-add -l >/dev/null 2>&1 || {
+  echo "workspace-dev: forwarded SSH agent has no identity" >&2
+  exit 1
+}
+
+sync_repository() {
+  local url="$1"
+  local destination="$2"
+
+  if [[ -e "$destination" && ! -d "$destination/.git" ]]; then
+    echo "workspace-dev: existing path is not a Git checkout: $destination" >&2
+    exit 1
+  fi
+
+  if [[ ! -d "$destination/.git" ]]; then
+    git clone "$url" "$destination"
+    return
+  fi
+
+  [[ "$(git -C "$destination" remote get-url origin)" == "$url" ]] || {
+    echo "workspace-dev: existing checkout has a different origin: $destination" >&2
+    exit 1
+  }
+  [[ -z "$(git -C "$destination" status --porcelain)" ]] || {
+    echo "workspace-dev: existing checkout is dirty: $destination" >&2
+    exit 1
+  }
+  git -C "$destination" pull --ff-only
+}
+
+mkdir -p "$HOME/dev" "$HOME/go/src/github.com/DataDog"
+sync_repository git@github.com:joe-mcgovern/pi-config.git "$HOME/dev/pi-config"
+sync_repository git@github.com:ddoghq-sandbox/datadog-pi-packages.git "$HOME/go/src/github.com/DataDog/datadog-pi-packages"
+
+[[ -x "$HOME/dev/dotfiles/install.sh" ]] || {
+  echo "workspace-dev: missing dotfiles installer at $HOME/dev/dotfiles/install.sh" >&2
+  exit 1
+}
+"$HOME/dev/dotfiles/install.sh"
+"$HOME/dev/pi-config/install.sh"
+REMOTE
+
+  verify_workspace "$name"
+}
+
+verify_workspace() {
+  [[ $# -eq 1 ]] || usage
+  require_command ssh
+  require_command workspaces
+
+  local name="$1"
+  validate_name "$name"
+  configure_workspace_ssh "$name"
+
+  ssh -o BatchMode=yes "$(workspace_alias "$name")" 'bash -s' <<'REMOTE'
+set -euo pipefail
+
+export PATH="$HOME/.local/bin:$HOME/.volta/bin:$HOME/.bun/bin:$PATH"
+[[ "$(uname -m)" == x86_64 ]] || {
+  echo "workspace-dev: expected x86_64, found $(uname -m)" >&2
+  exit 1
+}
+
+for command in zsh tmux nvim starship fzf rg zoxide lazygit bun pi go openspec; do
+  command -v "$command" >/dev/null 2>&1 || {
+    echo "workspace-dev: missing required command: $command" >&2
+    exit 1
+  }
+done
+
+docker compose version >/dev/null
+zsh -lic 'command -v pi >/dev/null'
+tmux -L workspace-dev -f "$HOME/.tmux.conf" new-session -d -s workspace-dev
+tmux -L workspace-dev kill-server
+
+[[ "$(openspec --version)" == "1.6.0" ]] || {
+  echo "workspace-dev: expected OpenSpec 1.6.0, found $(openspec --version 2>/dev/null || true)" >&2
+  exit 1
+}
+
+for checkout in "$HOME/dev/pi-config" "$HOME/go/src/github.com/DataDog/datadog-pi-packages"; do
+  [[ -d "$checkout/.git" ]] || {
+    echo "workspace-dev: missing repository checkout: $checkout" >&2
+    exit 1
+  }
+done
+
+[[ "$(git -C "$HOME/dev/pi-config" remote get-url origin)" == git@github.com:joe-mcgovern/pi-config.git ]] || {
+  echo "workspace-dev: pi-config origin is not credential-free SSH" >&2
+  exit 1
+}
+[[ "$(git -C "$HOME/go/src/github.com/DataDog/datadog-pi-packages" remote get-url origin)" == git@github.com:ddoghq-sandbox/datadog-pi-packages.git ]] || {
+  echo "workspace-dev: datadog-pi-packages origin is not credential-free SSH" >&2
+  exit 1
+}
+
+git config --global --get user.name >/dev/null
+git config --global --get user.email >/dev/null
+
+pi_home="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
+for link in "$pi_home/AGENTS.md" "$pi_home/mcp.json" "$pi_home/bin/context-mode"; do
+  [[ -L "$link" ]] || {
+    echo "workspace-dev: expected Pi managed link: $link" >&2
+    exit 1
+  }
+done
+
+pi_response="$(pi -p 'Reply exactly WORKSPACE_READY.' 2>/dev/null)"
+grep -Fq 'WORKSPACE_READY' <<<"$pi_response" || {
+  echo "workspace-dev: Pi model request did not return the readiness marker" >&2
+  exit 1
+}
+
+echo "workspace-dev: verified $(hostname)"
+REMOTE
+}
+
+[[ $# -ge 1 ]] || usage
+case "$1" in
+  create) shift; create_workspace "$@" ;;
+  sync) shift; sync_workspace "$@" ;;
+  verify) shift; verify_workspace "$@" ;;
+  *) usage ;;
+esac

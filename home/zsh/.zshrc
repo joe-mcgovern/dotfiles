@@ -2,8 +2,10 @@
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
 
-# Add brew to path
-export PATH="/opt/homebrew/bin:$PATH"
+# Add Homebrew when it is installed (macOS).
+if [[ -d /opt/homebrew/bin ]]; then
+  export PATH="/opt/homebrew/bin:$PATH"
+fi
 
 # Add rubies to path
 export PATH="$HOME/.rubies:$PATH"
@@ -46,9 +48,11 @@ else
   compinit -C
 fi
 
-# Initialize oh-my-zsh
-source $ZSH/oh-my-zsh.sh
-unalias gc 2>/dev/null
+# Initialize oh-my-zsh when it is installed.
+if [[ -f "$ZSH/oh-my-zsh.sh" ]]; then
+  source "$ZSH/oh-my-zsh.sh"
+  unalias gc 2>/dev/null
+fi
 
 # ----- Enviroment variable configuration -------------------------------------
 
@@ -95,7 +99,11 @@ alias gn='git new'
 alias gr='git restore'
 alias gco='git co'
 alias lg="lazygit"
-alias ls="exa --no-user --long --no-permissions --icons --header --no-time"
+if command -v eza >/dev/null 2>&1; then
+  alias ls="eza --no-user --long --no-permissions --icons --header --no-time"
+elif command -v exa >/dev/null 2>&1; then
+  alias ls="exa --no-user --long --no-permissions --icons --header --no-time"
+fi
 alias tf='terraform'
 alias k="kubectl"
 # This sets the default namesapce. Use this like `kn <namespace>`
@@ -138,7 +146,9 @@ zvm_after_init_commands+=(my_init)
 [ -f "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc" ] && source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.zsh.inc"
 [ -f "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc" ] && source "/opt/homebrew/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.zsh.inc"
 
-export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+if [[ -d /opt/homebrew/opt/ruby/bin ]]; then
+  export PATH="/opt/homebrew/opt/ruby/bin:$PATH"
+fi
 export PATH="$HOME/.volta/bin:$PATH"
 
 
@@ -158,19 +168,22 @@ export GH_DASH_CONFIG=$HOME/gh-dash/config.yaml
 alias gsti="~/dev/fzf-git.sh"
 
 # Added by Yarn Switch
-source "$HOME/.yarn/switch/env"
+[[ -f "$HOME/.yarn/switch/env" ]] && source "$HOME/.yarn/switch/env"
 
 # Trajectory - AI coding agent observability
 export PATH="$HOME/.trajectory/bin:$PATH"
 
 # >>> grok installer >>>
-export PATH="$HOME/.grok/bin:$PATH"
-fpath=(~/.grok/completions/zsh $fpath)
-autoload -Uz compinit && compinit -C
+if [[ -d "$HOME/.grok/bin" ]]; then
+  export PATH="$HOME/.grok/bin:$PATH"
+fi
+if [[ -d "$HOME/.grok/completions/zsh" ]]; then
+  fpath=("$HOME/.grok/completions/zsh" $fpath)
+fi
 # <<< grok installer <<<
 
 # opencode
 export PATH="$HOME/.opencode/bin:$PATH"
 
-# Pi
-export PATH="$HOME/.volta/tools/image/node/24.18.0/bin:$PATH"
+# Pi is installed through Volta, whose stable bin directory remains valid across Node upgrades.
+export PATH="$HOME/.volta/bin:$PATH"

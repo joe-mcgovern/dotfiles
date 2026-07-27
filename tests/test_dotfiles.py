@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+import socket
 import subprocess
 import tempfile
 import unittest
@@ -8,7 +9,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class DotfilesHelperTest(unittest.TestCase):
-    def test_default_stow_skips_claude_without_adopting_files(self):
+    def test_linux_default_stow_skips_claude_and_mac_git_without_adopting_files(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             home = root / "home"
@@ -19,6 +20,9 @@ class DotfilesHelperTest(unittest.TestCase):
             stow = bin_dir / "stow"
             stow.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$STOW_LOG"\n')
             stow.chmod(0o755)
+            uname = bin_dir / "uname"
+            uname.write_text("#!/bin/sh\necho Linux\n")
+            uname.chmod(0o755)
             env = os.environ.copy()
             env.update(HOME=str(home), PATH=f"{bin_dir}:/usr/bin:/bin", STOW_LOG=str(log))
 
@@ -33,8 +37,97 @@ class DotfilesHelperTest(unittest.TestCase):
 
             self.assertGreater(len(calls), 0)
             self.assertTrue(all("claude" not in call for call in calls))
+            self.assertTrue(all("git " not in call for call in calls))
             self.assertTrue(all("--adopt" not in call for call in calls))
             self.assertEqual(result.stdout.count("stowed "), len(calls))
+
+    def test_stow_failure_is_not_reported_as_success(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            bin_dir = root / "bin"
+            home.mkdir()
+            bin_dir.mkdir()
+            (bin_dir / "stow").write_text("#!/bin/sh\nexit 1\n")
+            (bin_dir / "stow").chmod(0o755)
+            (bin_dir / "uname").write_text("#!/bin/sh\necho Darwin\n")
+            (bin_dir / "uname").chmod(0o755)
+            env = os.environ.copy()
+            env.update(HOME=str(home), PATH=f"{bin_dir}:/usr/bin:/bin")
+
+            result = subprocess.run(
+                [ROOT / "bin/dotfiles", "stow", "alacritty"],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertNotIn("stowed alacritty", result.stdout)
+
+
+class WorkspaceDevTest(unittest.TestCase):
+    def test_create_derives_workspace_and_uses_required_flags(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            repo = root / "sample"
+            bin_dir = root / "bin"
+            log = root / "commands.log"
+            bin_dir.mkdir()
+            repo.mkdir()
+            subprocess.run(["git", "init", "--quiet", "--initial-branch", "feature"], cwd=repo, check=True)
+            subprocess.run(
+                ["git", "remote", "add", "origin", "git@ddoghq.github.com:ddoghq-sandbox/sample.git"],
+                cwd=repo,
+                check=True,
+            )
+            (bin_dir / "workspaces").write_text(
+                "#!/bin/sh\n"
+                "printf 'workspaces %s\\n' \"$*\" >> \"$COMMAND_LOG\"\n"
+                "if [ \"$1\" = list ]; then printf 'NAME\\n'; fi\n"
+            )
+            (bin_dir / "ssh-add").write_text("#!/bin/sh\nexit 0\n")
+            (bin_dir / "ssh").write_text(
+                "#!/bin/sh\n"
+                "if [ \"$1\" = -G ]; then echo 'forwardagent yes'; exit 0; fi\n"
+                "printf 'ssh %s\\n' \"$*\" >> \"$COMMAND_LOG\"\n"
+            )
+            for command in ("workspaces", "ssh-add", "ssh"):
+                (bin_dir / command).chmod(0o755)
+
+            agent = socket.socket(socket.AF_UNIX)
+            agent_path = str(root / "agent.sock")
+            agent.bind(agent_path)
+            try:
+                env = os.environ.copy()
+                env.update(
+                    PATH=f"{bin_dir}:/usr/bin:/bin",
+                    COMMAND_LOG=str(log),
+                    SSH_AUTH_SOCK=agent_path,
+                )
+                subprocess.run(
+                    [ROOT / "home/local/.local/bin/workspace-dev", "create", repo],
+                    check=True,
+                    capture_output=True,
+                    text=True,
+                    env=env,
+                )
+            finally:
+                agent.close()
+
+            commands = log.read_text()
+            self.assertIn(
+                "workspaces create sample-x86 --repo ddoghq-sandbox/sample --branch feature --instance-type aws:m5d.4xlarge --region us-east-1 --shell zsh --yes",
+                commands,
+            )
+            self.assertIn("workspaces ssh-config sample-x86", commands)
+            self.assertIn("workspaces dotfiles sync sample-x86", commands)
+            self.assertIn("ssh -o BatchMode=yes workspace-sample-x86", commands)
+
+    def test_create_rejects_an_already_listed_name(self):
+        script = (ROOT / "home/local/.local/bin/workspace-dev").read_text()
+        self.assertIn("workspace is already listed", script)
+        self.assertIn("workspaces list --no-color", script)
 
 
 class VimStateTest(unittest.TestCase):

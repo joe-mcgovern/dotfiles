@@ -1,0 +1,27 @@
+[alias]
+	co = checkout
+	cim = commit -m
+	new = checkout -b
+	cm = !git checkout $(git default-branch)
+	pom = !git pull origin $(git default-branch)
+	fom = !git fetch origin $(git default-branch)
+	rom = !git rebase origin $(git default-branch)
+	branch-current = rev-parse --symbolic-full-name --abbrev-ref HEAD
+	remote-default-branch = symbolic-ref refs/remotes/origin/HEAD --short
+	default-branch = !git remote-default-branch | cut -d '/' -f2-
+	po = !git push origin $(git branch-current)
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore
+[color]
+	ui = auto
+[pull]
+	rebase = true
+[push]
+	default = current
+[fetch]
+	prune = true
+[init]
+	defaultBranch = main
+[include]
+	path = ~/.gitconfig.local
