@@ -229,6 +229,16 @@ class WorkspaceDevTest(unittest.TestCase):
         self.assertIn("workspaces list --no-color", script)
 
 
+class TmuxStateTest(unittest.TestCase):
+    def test_downloaded_plugins_stay_outside_the_repository(self):
+        config = (ROOT / "home/tmux/.tmux.conf").read_text()
+        self.assertIn(
+            "set-environment -g TMUX_PLUGIN_MANAGER_PATH '~/.local/share/tmux/plugins/'",
+            config,
+        )
+        self.assertIn("run '~/.tmux/plugins/tpm/tpm'", config)
+
+
 class VimStateTest(unittest.TestCase):
     def test_mutable_state_stays_outside_the_repository(self):
         vimrc = (ROOT / "home/vim/.vimrc").read_text()
