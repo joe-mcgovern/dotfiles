@@ -1,3 +1,4 @@
+import base64
 import os
 from pathlib import Path
 import socket
@@ -117,12 +118,20 @@ class WorkspaceDevTest(unittest.TestCase):
 
             commands = log.read_text()
             self.assertIn(
-                f"workspaces create sample-x86 --repo ddoghq-sandbox/sample --branch feature --instance-type aws:m5d.4xlarge --region us-east-1 --shell zsh --yes cwd={repo}",
+                "workspaces create sample-x86 --instance-type aws:m5d.4xlarge --region us-east-1 --shell zsh --yes cwd=",
                 commands,
             )
+            create_line = next(line for line in commands.splitlines() if "workspaces create" in line)
+            self.assertNotIn("--repo", create_line)
+            self.assertNotIn(f"cwd={repo}", create_line)
             self.assertIn("workspaces ssh-config sample-x86", commands)
             self.assertIn("workspaces dotfiles sync sample-x86", commands)
-            self.assertIn("ssh -o BatchMode=yes workspace-sample-x86", commands)
+            repository = base64.b64encode(b"ddoghq-sandbox/sample").decode()
+            branch = base64.b64encode(b"feature").decode()
+            self.assertIn(
+                f"ssh -o BatchMode=yes workspace-sample-x86 bash -s -- {repository} {branch}",
+                commands,
+            )
 
     def test_create_rejects_an_already_listed_name(self):
         script = (ROOT / "home/local/.local/bin/workspace-dev").read_text()

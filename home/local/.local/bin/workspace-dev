@@ -114,36 +114,57 @@ create_workspace() {
     die "workspace is already listed: $name"
   fi
 
+  local create_dir
+  create_dir="$(mktemp -d)"
+  trap 'rmdir "$create_dir"' RETURN
   (
-    cd "$repository_path"
+    cd "$create_dir"
     workspaces create "$name" \
-      --repo "$repository" \
-      --branch "$branch" \
       --instance-type aws:m5d.4xlarge \
       --region us-east-1 \
       --shell zsh \
       --yes
   )
+  rmdir "$create_dir"
+  trap - RETURN
+
   configure_workspace_ssh "$name"
-  sync_workspace "$name"
+  sync_workspace "$name" "$repository" "$branch"
 }
 
 sync_workspace() {
-  [[ $# -eq 1 ]] || usage
+  [[ $# -ge 1 && $# -le 3 ]] || usage
   require_command ssh
   require_command ssh-add
   require_command workspaces
 
-  local name="$1"
+  local name="$1" repository="${2:-}" branch="${3:-}"
   validate_name "$name"
   require_forwarded_auth
   configure_workspace_ssh "$name"
   workspaces dotfiles sync "$name"
 
-  ssh -o BatchMode=yes "$(workspace_alias "$name")" 'bash -s' <<'REMOTE'
+  local repository_encoded=- branch_encoded=-
+  if [[ -n "$repository" ]]; then
+    repository_encoded="$(printf '%s' "$repository" | base64)"
+    branch_encoded="$(printf '%s' "$branch" | base64)"
+  fi
+
+  ssh -o BatchMode=yes "$(workspace_alias "$name")" bash -s -- "$repository_encoded" "$branch_encoded" <<'REMOTE'
 set -euo pipefail
 
 export PATH="$HOME/.local/bin:$HOME/.volta/bin:$HOME/.bun/bin:$PATH"
+
+repository=""
+branch=""
+metadata_dir="$HOME/.config/workspace-dev"
+if [[ "${1:--}" != - ]]; then
+  repository="$(printf '%s' "$1" | base64 --decode)"
+  branch="$(printf '%s' "$2" | base64 --decode)"
+elif [[ -f "$metadata_dir/repository" && -f "$metadata_dir/branch" ]]; then
+  repository="$(cat "$metadata_dir/repository")"
+  branch="$(cat "$metadata_dir/branch")"
+fi
 
 [[ -n "${SSH_AUTH_SOCK:-}" && -S "$SSH_AUTH_SOCK" ]] || {
   echo "workspace-dev: forwarded SSH_AUTH_SOCK is required for private repository finalization" >&2
@@ -179,7 +200,35 @@ sync_repository() {
   git -C "$destination" pull --ff-only
 }
 
-mkdir -p "$HOME/dev" "$HOME/go/src/github.com/DataDog"
+mkdir -p "$HOME/dev" "$HOME/dd" "$HOME/go/src/github.com/DataDog" "$metadata_dir"
+
+if [[ -n "$repository" ]]; then
+  [[ "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || {
+    echo "workspace-dev: invalid repository metadata: $repository" >&2
+    exit 1
+  }
+  [[ -n "$branch" ]] || {
+    echo "workspace-dev: missing repository branch metadata" >&2
+    exit 1
+  }
+
+  primary_url="git@github.com:${repository}.git"
+  primary_dir="$HOME/dd/${repository##*/}"
+  if [[ -e "$primary_dir" && ! -d "$primary_dir/.git" ]]; then
+    echo "workspace-dev: existing primary repository path is not a Git checkout: $primary_dir" >&2
+    exit 1
+  fi
+  if [[ ! -d "$primary_dir/.git" ]]; then
+    git clone --branch "$branch" --single-branch "$primary_url" "$primary_dir"
+  elif [[ "$(git -C "$primary_dir" remote get-url origin)" != "$primary_url" ]]; then
+    echo "workspace-dev: primary repository has an unexpected origin: $primary_dir" >&2
+    exit 1
+  fi
+
+  printf '%s\n' "$repository" > "$metadata_dir/repository"
+  printf '%s\n' "$branch" > "$metadata_dir/branch"
+fi
+
 sync_repository git@github.com:joe-mcgovern/pi-config.git "$HOME/dev/pi-config"
 sync_repository git@github.com:ddoghq-sandbox/datadog-pi-packages.git "$HOME/go/src/github.com/DataDog/datadog-pi-packages"
 
@@ -242,6 +291,27 @@ done
 }
 [[ "$(git -C "$HOME/go/src/github.com/DataDog/datadog-pi-packages" remote get-url origin)" == git@github.com:ddoghq-sandbox/datadog-pi-packages.git ]] || {
   echo "workspace-dev: datadog-pi-packages origin is not credential-free SSH" >&2
+  exit 1
+}
+
+metadata_dir="$HOME/.config/workspace-dev"
+[[ -s "$metadata_dir/repository" && -s "$metadata_dir/branch" ]] || {
+  echo "workspace-dev: primary repository metadata is missing" >&2
+  exit 1
+}
+repository="$(cat "$metadata_dir/repository")"
+[[ "$repository" =~ ^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$ ]] || {
+  echo "workspace-dev: primary repository metadata is invalid" >&2
+  exit 1
+}
+primary_dir="$HOME/dd/${repository##*/}"
+primary_url="git@github.com:${repository}.git"
+[[ -d "$primary_dir/.git" ]] || {
+  echo "workspace-dev: primary repository checkout is missing: $primary_dir" >&2
+  exit 1
+}
+[[ "$(git -C "$primary_dir" remote get-url origin)" == "$primary_url" ]] || {
+  echo "workspace-dev: primary repository origin is not credential-free SSH" >&2
   exit 1
 }
 
