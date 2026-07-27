@@ -73,6 +73,65 @@ class DotfilesHelperTest(unittest.TestCase):
             self.assertTrue((home / ".gitconfig").is_file())
             self.assertFalse((home / ".gitconfig").is_symlink())
 
+    def test_linux_preserves_the_known_workspace_zsh_template(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            bin_dir = root / "bin"
+            log = root / "stow.log"
+            home.mkdir()
+            bin_dir.mkdir()
+            template = (
+                "# If you come from bash you might have to change your $PATH.\n"
+                'ZSH_THEME="robbyrussell"\n'
+            )
+            (home / ".zshrc").write_text(template)
+            (bin_dir / "stow").write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$STOW_LOG"\n')
+            (bin_dir / "stow").chmod(0o755)
+            (bin_dir / "uname").write_text("#!/bin/sh\necho Linux\n")
+            (bin_dir / "uname").chmod(0o755)
+            env = os.environ.copy()
+            env.update(HOME=str(home), PATH=f"{bin_dir}:/usr/bin:/bin", STOW_LOG=str(log))
+
+            result = subprocess.run(
+                [ROOT / "bin/dotfiles", "stow", "zsh"],
+                capture_output=True,
+                text=True,
+                check=True,
+                env=env,
+            )
+
+            self.assertFalse((home / ".zshrc").exists())
+            self.assertEqual((home / ".zshrc.workspace-default").read_text(), template)
+            self.assertIn("preserved workspace default", result.stdout)
+            self.assertIn("zsh", log.read_text())
+
+    def test_linux_refuses_an_unmanaged_zshrc(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            bin_dir = root / "bin"
+            home.mkdir()
+            bin_dir.mkdir()
+            (home / ".zshrc").write_text("user configuration\n")
+            (bin_dir / "stow").write_text("#!/bin/sh\nexit 0\n")
+            (bin_dir / "stow").chmod(0o755)
+            (bin_dir / "uname").write_text("#!/bin/sh\necho Linux\n")
+            (bin_dir / "uname").chmod(0o755)
+            env = os.environ.copy()
+            env.update(HOME=str(home), PATH=f"{bin_dir}:/usr/bin:/bin")
+
+            result = subprocess.run(
+                [ROOT / "bin/dotfiles", "stow", "zsh"],
+                capture_output=True,
+                text=True,
+                env=env,
+            )
+
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("refusing to replace unmanaged", result.stderr)
+            self.assertEqual((home / ".zshrc").read_text(), "user configuration\n")
+
     def test_stow_failure_is_not_reported_as_success(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)

@@ -91,6 +91,24 @@ is_skipped_package() {
   return 1
 }
 
+prepare_package_target() {
+  local package="$1"
+  [[ "$package" == zsh && "$(uname -s)" == Linux ]] || return 0
+  [[ -f "$HOME/.zshrc" && ! -L "$HOME/.zshrc" ]] || return 0
+
+  if head -1 "$HOME/.zshrc" | grep -Fqx '# If you come from bash you might have to change your $PATH.' \
+    && grep -Fqx 'ZSH_THEME="robbyrussell"' "$HOME/.zshrc"; then
+    [[ ! -e "$HOME/.zshrc.workspace-default" ]] \
+      || { echo "error: refusing to overwrite $HOME/.zshrc.workspace-default" >&2; exit 1; }
+    mv "$HOME/.zshrc" "$HOME/.zshrc.workspace-default"
+    echo "preserved workspace default .zshrc as ~/.zshrc.workspace-default"
+    return
+  fi
+
+  echo "error: refusing to replace unmanaged $HOME/.zshrc" >&2
+  exit 1
+}
+
 cmd_stow() {
   local packages=("$@")
   if [[ ${#packages[@]} -eq 0 ]]; then
@@ -110,6 +128,7 @@ cmd_stow() {
       echo "error: package '$pkg' is not supported on this platform" >&2
       exit 1
     fi
+    prepare_package_target "$pkg"
     (cd "$HOME_DIR" && stow --dotfiles -t "$HOME" "$pkg")
     echo "stowed $pkg"
   done
