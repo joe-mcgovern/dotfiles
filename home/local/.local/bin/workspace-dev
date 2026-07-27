@@ -237,6 +237,15 @@ sync_repository git@github.com:ddoghq-sandbox/datadog-pi-packages.git "$HOME/go/
   exit 1
 }
 "$HOME/dev/dotfiles/install.sh"
+
+if head -3 "$HOME/.gitconfig" 2>/dev/null | grep -q '^# Managed by workspaces$'; then
+  portable_gitconfig="$HOME/dev/dotfiles/home/git-linux/.gitconfig"
+  fallback_gitconfig="$HOME/dotfiles/.gitconfig"
+  git config --global --fixed-value --unset-all include.path "$fallback_gitconfig" 2>/dev/null || true
+  git config --global --get-all include.path | grep -Fqx "$portable_gitconfig" \
+    || git config --global --add include.path "$portable_gitconfig"
+fi
+
 "$HOME/dev/pi-config/install.sh"
 REMOTE
 

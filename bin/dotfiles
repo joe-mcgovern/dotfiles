@@ -72,7 +72,13 @@ cmd_add() {
 
 SKIP_STOW=(claude)
 case "$(uname -s)" in
-  Linux) SKIP_STOW+=(git) ;;
+  Linux)
+    SKIP_STOW+=(git)
+    if [[ -f "$HOME/.gitconfig" && ! -L "$HOME/.gitconfig" ]] \
+      && head -3 "$HOME/.gitconfig" 2>/dev/null | grep -q '^# Managed by workspaces$'; then
+      SKIP_STOW+=(git-linux)
+    fi
+    ;;
   Darwin) SKIP_STOW+=(git-linux) ;;
 esac
 

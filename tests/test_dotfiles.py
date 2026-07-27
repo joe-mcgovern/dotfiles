@@ -39,8 +39,39 @@ class DotfilesHelperTest(unittest.TestCase):
             self.assertGreater(len(calls), 0)
             self.assertTrue(all("claude" not in call for call in calls))
             self.assertTrue(all("git " not in call for call in calls))
+            self.assertTrue(any("git-linux" in call for call in calls))
             self.assertTrue(all("--adopt" not in call for call in calls))
             self.assertEqual(result.stdout.count("stowed "), len(calls))
+
+    def test_linux_rerun_preserves_workspaces_managed_gitconfig(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            home = root / "home"
+            bin_dir = root / "bin"
+            log = root / "stow.log"
+            home.mkdir()
+            bin_dir.mkdir()
+            (home / ".gitconfig").write_text("# Managed by workspaces\n[core]\n\thooksPath = managed\n")
+            (bin_dir / "stow").write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$STOW_LOG"\n')
+            (bin_dir / "stow").chmod(0o755)
+            (bin_dir / "uname").write_text("#!/bin/sh\necho Linux\n")
+            (bin_dir / "uname").chmod(0o755)
+            env = os.environ.copy()
+            env.update(HOME=str(home), PATH=f"{bin_dir}:/usr/bin:/bin", STOW_LOG=str(log))
+
+            subprocess.run(
+                [ROOT / "bin/dotfiles", "stow"],
+                capture_output=True,
+                text=True,
+                check=True,
+                env=env,
+            )
+
+            calls = log.read_text().splitlines()
+            self.assertTrue(all("git-linux" not in call for call in calls))
+            self.assertTrue(all(" git " not in call for call in calls))
+            self.assertTrue((home / ".gitconfig").is_file())
+            self.assertFalse((home / ".gitconfig").is_symlink())
 
     def test_stow_failure_is_not_reported_as_success(self):
         with tempfile.TemporaryDirectory() as temporary:
