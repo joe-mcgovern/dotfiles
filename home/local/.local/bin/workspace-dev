@@ -289,6 +289,32 @@ if head -3 "$HOME/.gitconfig" 2>/dev/null | grep -q '^# Managed by workspaces$';
 fi
 
 "$HOME/dev/pi-config/install.sh"
+
+if ! ddtool auth token rapid-ai-platform --datacenter us1.ddbuild.io >/dev/null 2>&1; then
+  ddtool auth login --mode auth-code --datacenter us1.ddbuild.io
+fi
+
+models_ready() {
+  python3 - "$HOME/.pi/agent/models.json" <<'PY'
+import json
+from pathlib import Path
+import sys
+path = Path(sys.argv[1])
+if not path.is_file():
+    raise SystemExit(1)
+providers = json.loads(path.read_text()).get("providers", {})
+selected = [provider for name, provider in providers.items() if name.startswith("ai-gw-")]
+raise SystemExit(0 if selected and any(provider.get("models") for provider in selected) else 1)
+PY
+}
+
+if ! models_ready; then
+  pi --no-session -p '/refresh-models preset terminal-bench-2.0-top10' >/dev/null
+fi
+models_ready || {
+  echo "workspace-dev: Pi AI Gateway models were not configured" >&2
+  exit 1
+}
 REMOTE
 
   verify_workspace "$name"
@@ -375,8 +401,9 @@ primary_dir="$HOME/dd/${repository##*/}"
   exit 1
 }
 
-git config --global --get user.name >/dev/null
-git config --global --get user.email >/dev/null
+git config --global --includes --get user.name >/dev/null
+git config --global --includes --get user.email >/dev/null
+git config --global --includes --get commit.gpgSign | grep -Fqx true
 
 pi_home="${PI_CODING_AGENT_DIR:-$HOME/.pi/agent}"
 for link in "$pi_home/AGENTS.md" "$pi_home/mcp.json" "$pi_home/bin/context-mode"; do

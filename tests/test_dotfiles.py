@@ -228,6 +228,13 @@ class WorkspaceDevTest(unittest.TestCase):
         self.assertIn("workspace is already listed", script)
         self.assertIn("workspaces list --no-color", script)
 
+    def test_finalization_uses_workspace_identity_for_pi_and_git(self):
+        script = (ROOT / "home/local/.local/bin/workspace-dev").read_text()
+        self.assertIn("ddtool auth login --mode auth-code --datacenter us1.ddbuild.io", script)
+        self.assertIn("/refresh-models preset terminal-bench-2.0-top10", script)
+        self.assertIn("git config --global --includes --get user.name", script)
+        self.assertNotIn("--api-key", script)
+
 
 class TmuxStateTest(unittest.TestCase):
     def test_downloaded_plugins_stay_outside_the_repository(self):
