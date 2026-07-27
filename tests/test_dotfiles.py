@@ -83,7 +83,7 @@ class WorkspaceDevTest(unittest.TestCase):
             )
             (bin_dir / "workspaces").write_text(
                 "#!/bin/sh\n"
-                "printf 'workspaces %s\\n' \"$*\" >> \"$COMMAND_LOG\"\n"
+                "printf 'workspaces %s cwd=%s\\n' \"$*\" \"$PWD\" >> \"$COMMAND_LOG\"\n"
                 "if [ \"$1\" = list ]; then printf 'NAME\\n'; fi\n"
             )
             (bin_dir / "ssh-add").write_text("#!/bin/sh\nexit 0\n")
@@ -117,7 +117,7 @@ class WorkspaceDevTest(unittest.TestCase):
 
             commands = log.read_text()
             self.assertIn(
-                "workspaces create sample-x86 --repo ddoghq-sandbox/sample --branch feature --instance-type aws:m5d.4xlarge --region us-east-1 --shell zsh --yes",
+                f"workspaces create sample-x86 --repo ddoghq-sandbox/sample --branch feature --instance-type aws:m5d.4xlarge --region us-east-1 --shell zsh --yes cwd={repo}",
                 commands,
             )
             self.assertIn("workspaces ssh-config sample-x86", commands)

@@ -114,13 +114,16 @@ create_workspace() {
     die "workspace is already listed: $name"
   fi
 
-  workspaces create "$name" \
-    --repo "$repository" \
-    --branch "$branch" \
-    --instance-type aws:m5d.4xlarge \
-    --region us-east-1 \
-    --shell zsh \
-    --yes
+  (
+    cd "$repository_path"
+    workspaces create "$name" \
+      --repo "$repository" \
+      --branch "$branch" \
+      --instance-type aws:m5d.4xlarge \
+      --region us-east-1 \
+      --shell zsh \
+      --yes
+  )
   configure_workspace_ssh "$name"
   sync_workspace "$name"
 }
