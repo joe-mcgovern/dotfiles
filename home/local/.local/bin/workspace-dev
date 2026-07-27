@@ -346,6 +346,10 @@ for command in zsh tmux nvim starship fzf rg zoxide lazygit bun pi go openspec; 
 done
 
 docker compose version >/dev/null
+infocmp xterm-kitty >/dev/null || {
+  echo "workspace-dev: missing xterm-kitty terminfo" >&2
+  exit 1
+}
 zsh -lic 'command -v pi >/dev/null'
 tmux -L workspace-dev -f "$HOME/.tmux.conf" new-session -d -s workspace-dev
 tmux -L workspace-dev kill-server

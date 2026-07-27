@@ -18,6 +18,7 @@ install_linux_packages() {
     fzf \
     git \
     gnupg \
+    kitty-terminfo \
     openssh-client \
     ripgrep \
     stow \

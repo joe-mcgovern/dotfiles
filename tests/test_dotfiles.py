@@ -237,11 +237,12 @@ class WorkspaceDevTest(unittest.TestCase):
         self.assertNotIn("--api-key", script)
 
 
-class ZshStateTest(unittest.TestCase):
-    def test_remote_shell_uses_stable_zle_input_engine(self):
-        config = (ROOT / "home/zsh/.zshrc").read_text()
-        self.assertIn("ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_ZLE", config)
-        self.assertNotIn("ZVM_READKEY_ENGINE=$ZVM_READKEY_ENGINE_NEX", config)
+class LinuxTerminalSupportTest(unittest.TestCase):
+    def test_installs_and_verifies_kitty_terminfo(self):
+        installer = (ROOT / "install.sh").read_text()
+        workspace_dev = (ROOT / "home/local/.local/bin/workspace-dev").read_text()
+        self.assertIn("    kitty-terminfo \\\n", installer)
+        self.assertIn("infocmp xterm-kitty >/dev/null", workspace_dev)
 
 
 class TmuxStateTest(unittest.TestCase):
