@@ -232,6 +232,7 @@ class WorkspaceDevTest(unittest.TestCase):
         script = (ROOT / "home/local/.local/bin/workspace-dev").read_text()
         self.assertIn("ddtool auth login --mode auth-code --datacenter us1.ddbuild.io", script)
         self.assertIn("/refresh-models preset terminal-bench-2.0-top10", script)
+        self.assertIn("pi_response=\"$(pi -p 'Reply exactly WORKSPACE_READY.' </dev/null", script)
         self.assertIn("git config --global --includes --get user.name", script)
         self.assertNotIn("--api-key", script)
 

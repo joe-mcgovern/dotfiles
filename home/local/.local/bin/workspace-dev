@@ -291,7 +291,7 @@ fi
 "$HOME/dev/pi-config/install.sh"
 
 if ! ddtool auth token rapid-ai-platform --datacenter us1.ddbuild.io >/dev/null 2>&1; then
-  ddtool auth login --mode auth-code --datacenter us1.ddbuild.io
+  ddtool auth login --mode auth-code --datacenter us1.ddbuild.io </dev/null
 fi
 
 models_ready() {
@@ -309,7 +309,7 @@ PY
 }
 
 if ! models_ready; then
-  pi --no-session -p '/refresh-models preset terminal-bench-2.0-top10' >/dev/null
+  pi --no-session -p '/refresh-models preset terminal-bench-2.0-top10' </dev/null >/dev/null
 fi
 models_ready || {
   echo "workspace-dev: Pi AI Gateway models were not configured" >&2
@@ -413,7 +413,7 @@ for link in "$pi_home/AGENTS.md" "$pi_home/mcp.json" "$pi_home/bin/context-mode"
   }
 done
 
-pi_response="$(pi -p 'Reply exactly WORKSPACE_READY.' 2>/dev/null)"
+pi_response="$(pi -p 'Reply exactly WORKSPACE_READY.' </dev/null 2>/dev/null)"
 grep -Fq 'WORKSPACE_READY' <<<"$pi_response" || {
   echo "workspace-dev: Pi model request did not return the readiness marker" >&2
   exit 1
