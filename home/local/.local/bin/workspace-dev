@@ -195,9 +195,20 @@ ssh-add -l >/dev/null 2>&1 || {
   exit 1
 }
 
+ssh_repository_identity() {
+  local url="$1" repository
+  case "$url" in
+    git@github.com:*) repository="${url#git@github.com:}" ;;
+    git@*.github.com:*) repository="${url#*:}" ;;
+    *) return 1 ;;
+  esac
+  printf '%s\n' "${repository%.git}"
+}
+
 sync_repository() {
   local url="$1"
   local destination="$2"
+  local expected_identity actual_identity
 
   if [[ -e "$destination" && ! -d "$destination/.git" ]]; then
     echo "workspace-dev: existing path is not a Git checkout: $destination" >&2
@@ -209,7 +220,12 @@ sync_repository() {
     return
   fi
 
-  [[ "$(git -C "$destination" remote get-url origin)" == "$url" ]] || {
+  expected_identity="$(ssh_repository_identity "$url")"
+  actual_identity="$(ssh_repository_identity "$(git -C "$destination" remote get-url origin)")" || {
+    echo "workspace-dev: existing checkout does not use credential-free SSH: $destination" >&2
+    exit 1
+  }
+  [[ "$actual_identity" == "$expected_identity" ]] || {
     echo "workspace-dev: existing checkout has a different origin: $destination" >&2
     exit 1
   }
@@ -240,9 +256,15 @@ if [[ -n "$repository" ]]; then
   fi
   if [[ ! -d "$primary_dir/.git" ]]; then
     git clone --branch "$branch" --single-branch "$primary_url" "$primary_dir"
-  elif [[ "$(git -C "$primary_dir" remote get-url origin)" != "$primary_url" ]]; then
-    echo "workspace-dev: primary repository has an unexpected origin: $primary_dir" >&2
-    exit 1
+  else
+    primary_identity="$(ssh_repository_identity "$(git -C "$primary_dir" remote get-url origin)")" || {
+      echo "workspace-dev: primary repository does not use credential-free SSH: $primary_dir" >&2
+      exit 1
+    }
+    [[ "$primary_identity" == "$repository" ]] || {
+      echo "workspace-dev: primary repository has an unexpected origin: $primary_dir" >&2
+      exit 1
+    }
   fi
 
   printf '%s\n' "$repository" > "$metadata_dir/repository"
@@ -314,11 +336,21 @@ for checkout in "$HOME/dev/pi-config" "$HOME/go/src/github.com/DataDog/datadog-p
   }
 done
 
-[[ "$(git -C "$HOME/dev/pi-config" remote get-url origin)" == git@github.com:joe-mcgovern/pi-config.git ]] || {
+ssh_repository_identity() {
+  local url="$1" repository
+  case "$url" in
+    git@github.com:*) repository="${url#git@github.com:}" ;;
+    git@*.github.com:*) repository="${url#*:}" ;;
+    *) return 1 ;;
+  esac
+  printf '%s\n' "${repository%.git}"
+}
+
+[[ "$(ssh_repository_identity "$(git -C "$HOME/dev/pi-config" remote get-url origin)")" == joe-mcgovern/pi-config ]] || {
   echo "workspace-dev: pi-config origin is not credential-free SSH" >&2
   exit 1
 }
-[[ "$(git -C "$HOME/go/src/github.com/DataDog/datadog-pi-packages" remote get-url origin)" == git@github.com:ddoghq-sandbox/datadog-pi-packages.git ]] || {
+[[ "$(ssh_repository_identity "$(git -C "$HOME/go/src/github.com/DataDog/datadog-pi-packages" remote get-url origin)")" == ddoghq-sandbox/datadog-pi-packages ]] || {
   echo "workspace-dev: datadog-pi-packages origin is not credential-free SSH" >&2
   exit 1
 }
@@ -334,12 +366,11 @@ repository="$(cat "$metadata_dir/repository")"
   exit 1
 }
 primary_dir="$HOME/dd/${repository##*/}"
-primary_url="git@github.com:${repository}.git"
 [[ -d "$primary_dir/.git" ]] || {
   echo "workspace-dev: primary repository checkout is missing: $primary_dir" >&2
   exit 1
 }
-[[ "$(git -C "$primary_dir" remote get-url origin)" == "$primary_url" ]] || {
+[[ "$(ssh_repository_identity "$(git -C "$primary_dir" remote get-url origin)")" == "$repository" ]] || {
   echo "workspace-dev: primary repository origin is not credential-free SSH" >&2
   exit 1
 }
